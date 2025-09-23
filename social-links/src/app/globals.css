@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Browser default margin/padding sıfırla */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
 /* NextJS development overlay gizle */
 div[data-nextjs-dialog-overlay],
 div[data-nextjs-toast],
