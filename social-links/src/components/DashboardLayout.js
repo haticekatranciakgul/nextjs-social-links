@@ -28,6 +28,14 @@ export default function DashboardLayout({ children, currentPage = "home" }) {
     { icon: SettingsIcon, label: "Settings", key: "settings", path: "/dashboard/settings", newTab: false },
   ];
 
+  const handleNavigation = (item) => {
+    if (item.newTab) {
+      window.open(item.path, '_blank');
+    } else {
+      router.push(item.path);
+    }
+  };
+
   return (
     <div 
       className="min-h-screen flex"
@@ -73,13 +81,7 @@ export default function DashboardLayout({ children, currentPage = "home" }) {
         {sidebarItems.map((item) => (
           <Tooltip key={item.key} title={item.label} placement="right">
             <IconButton
-              onClick={() => {
-                if (item.newTab) {
-                  window.open(item.path, '_blank');
-                } else {
-                  router.push(item.path);
-                }
-              }}
+              onClick={() => handleNavigation(item)}
               sx={{
                 color: currentPage === item.key ? '#8b5cf6' : 'rgba(255, 255, 255, 0.7)',
                 backgroundColor: currentPage === item.key ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
@@ -94,23 +96,22 @@ export default function DashboardLayout({ children, currentPage = "home" }) {
           </Tooltip>
         ))}
 
-        {/* Logout Button - En Altta */}
-        <Box sx={{ mt: 'auto' }}>
-          <Tooltip title="Logout" placement="right">
-            <IconButton
-              onClick={handleLogout}
-              sx={{
-                color: 'rgba(255, 255, 255, 0.7)',
-                '&:hover': {
-                  backgroundColor: 'rgba(239, 68, 68, 0.3)',
-                  color: '#ef4444'
-                }
-              }}
-            >
-              <LogoutIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        {/* Logout Button - Settings'in hemen altında */}
+        <Tooltip title="Logout" placement="right">
+          <IconButton
+            onClick={handleLogout}
+            sx={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              marginTop: 1, // Settings'ten küçük boşluk
+              '&:hover': {
+                backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                color: '#ef4444'
+              }
+            }}
+          >
+            <LogoutIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {/* Ana İçerik Alanı */}
