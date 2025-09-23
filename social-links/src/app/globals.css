@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* NextJS development overlay gizle */
+div[data-nextjs-dialog-overlay],
+div[data-nextjs-toast],
+button[data-nextjs-errors-dialog-left-right-close-button],
+div[style*="position: fixed"][style*="bottom: 16px"][style*="left: 16px"] {
+  display: none !important;
+}
+
+/* Genel overlay butonları gizle */
+button[style*="position: fixed"][style*="bottom"] {
+  display: none !important;
+}
+
+/* NextJS error overlay gizle */
+nextjs-portal {
+  display: none !important;
+}
