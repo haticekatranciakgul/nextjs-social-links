@@ -15,7 +15,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -24,9 +23,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Firebase Auth Context otomatik olarak user state'i güncelleyecek
       console.log("Login successful");
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       console.error("Login error:", error);
       alert("Error: " + error.message);
@@ -40,16 +38,13 @@ export default function LoginPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
-      // Kullanıcı bilgilerini al
       const user = result.user;
       const username = user.displayName?.toLowerCase().replace(/\s+/g, '') || user.email?.split('@')[0];
       
-      // Firestore'da kullanıcı var mı kontrol et
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
-        // Yeni kullanıcı - Firestore'a kaydet
         await setDoc(userDocRef, {
           email: user.email,
           username: username,
@@ -59,15 +54,13 @@ export default function LoginPage() {
           provider: 'google'
         });
         
-        // Username mapping
         await setDoc(doc(db, "usernames", username), {
           uid: user.uid,
         });
       }
       
-      // Firebase Auth Context otomatik olarak user state'i güncelleyecek
       console.log("Google login successful:", user.email);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       console.error("Google login error:", error);
       alert("Google login failed: " + error.message);
@@ -75,14 +68,12 @@ export default function LoginPage() {
   };
 
   const handleFacebookSignIn = () => {
-    // Facebook sign-in logic will be added later
     console.log("Facebook sign in");
   };
 
   return (
     <AuthLayout title="SIGN IN" subtitle="Log in with email address">
       <div className="space-y-6">
-        {/* Email Input */}
         <TextField
           fullWidth
           placeholder="E-mail"
@@ -104,24 +95,14 @@ export default function LoginPage() {
               borderRadius: '12px',
               color: 'white',
               height: '56px',
-              '& fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-              },
-              '&:hover fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#8b5cf6',
-              },
+              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
             },
-            '& .MuiOutlinedInput-input::placeholder': {
-              color: '#9ca3af',
-              opacity: 1,
-            },
+            '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
           }}
         />
 
-        {/* Password Input */}
         <TextField
           fullWidth
           type="password"
@@ -144,24 +125,14 @@ export default function LoginPage() {
               borderRadius: '12px',
               color: 'white',
               height: '56px',
-              '& fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-              },
-              '&:hover fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#8b5cf6',
-              },
+              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
             },
-            '& .MuiOutlinedInput-input::placeholder': {
-              color: '#9ca3af',
-              opacity: 1,
-            },
+            '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
           }}
         />
 
-        {/* Sign In Button */}
         <Button
           fullWidth
           variant="contained"
@@ -179,23 +150,17 @@ export default function LoginPage() {
             fontWeight: 600,
             height: '56px',
             mb: 4,
-            '&:hover': {
-              background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
-            },
-            '&:disabled': {
-              background: 'rgba(139, 92, 246, 0.5)',
-            },
+            '&:hover': { background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)' },
+            '&:disabled': { background: 'rgba(139, 92, 246, 0.5)' },
           }}
         >
           {loading ? "Signing in..." : "Sign in"}
         </Button>
 
-        {/* Divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 h-px bg-gray-600"></div>
         </div>
 
-        {/* Or continue with text */}
         <div className="text-center mb-4">
           <Typography sx={{ 
             fontFamily: 'Poppins, sans-serif',
@@ -206,18 +171,11 @@ export default function LoginPage() {
           </Typography>
         </div>
 
-        {/* Social Buttons */}
         <div className="flex gap-3">
           <Button
             variant="outlined"
             onClick={handleGoogleSignIn}
-            startIcon={
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjU2IDEyLjI1QzIyLjU2IDExLjQ3IDIyLjQ5IDEwLjcyIDIyLjM2IDEwSDEyVjE0LjI2SDE3LjkyQzE3LjY2IDE1LjYgMTYuOSAxNi43NyAxNS43MyAxNy41M1YyMC41NkgxOS4zNkMyMS4wOSAxOC45OCAyMi41NiAxNS45MiAyMi56IDEyLjI1WiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTIgMjMuMjVDMTUuMDQgMjMuMjUgMTcuNTEgMjIuMjEgMTkuMzYgMjAuNTZMMTUuNzMgMTcuNTNDMTQuNjEgMTguMjUgMTMuMTMgMTguNjggMTIgMTguNjhDOS4wNSAxOC42OCA2LjU5IDE2LjgyIDUuNjkgMTQuMzZIMlYxNy40MkMzLjgyIDIxLjAzIDcuNjEgMjMuMjUgMTIgMjMuMjVaIiBmaWxsPSIjMzRBODUzIi8+CjxwYXRoIGQ9Ik01LjY5IDE0LjM2QzUuNSAxMy44MiA1LjM5IDEzLjI0IDUuMzkgMTIuNjNDNS4zOSAxMi4wMiA1LjUgMTEuNDQgNS42OSAxMC45VjcuODRIMkMxLjM2IDkuMTMgMSAxMC44NCAxIDEyLjYzQzEgMTQuNDIgMS4zNiAxNi4xMyAyIDE3LjQyTDUuNjkgMTQuMzZaIiBmaWxsPSIjRkJCQzA0Ii8+CjxwYXRoIGQ9Ik0xMiA2LjU4QzEzLjUyIDYuNTggMTQuODkgNy4xMyAxNS45NSA4LjEzTDE5LjMxIDQuNzdDMTcuNSAzLjA5IDE1LjAzIDIgMTIgMkM3LjYxIDIgMy44MiA0LjIyIDIgNy44NEw1LjY5IDEwLjlDNi41OSA4LjQ0IDkuMDUgNi41OCAxMiA2LjU4WiIgZmlsbD0iI0VBNDMzNSIvPgo8L3N2Zz4K"
-                alt="Google"
-                style={{ width: 20, height: 20 }}
-              />
-            }
+            startIcon={<GoogleIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -237,13 +195,7 @@ export default function LoginPage() {
           <Button
             variant="outlined"
             onClick={handleFacebookSignIn}
-            startIcon={
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI0IDEyQzI0IDUuMzcyNTggMTguNjI3NCAwIDEyIDBTMCA1LjM3MjU4IDAgMTJDMCAxNy45OTEgNC4zODgzNyAyMi45NTQxIDEwLjEyNSAyMy44NTQyVjE1LjQ2ODhINy4wNzgxMlYxMkgxMC4xMjVWOS4zNTYyNUMxMC4xMjUgNi4zNDg3NSAxMS45MTY2IDQuNjg3NSAxNC42NTggNC42ODc1QzE1Ljk3MDEgNC42ODc1IDE3LjM0MzggNC45Mjc1IDE3LjM0MzggNC45Mjc1VjcuODc1SDE1LjgzMDlDMTQuMzQgNy44NzUgMTMuODc1IDguOCAxMy44NzUgOS43NVYxMkgxNy4yMDMxTDE2LjY3MTEgMTUuNDY4OEgxMy44NzVWMjMuODU0MkMxOS42MTE2IDIyLjk1NDEgMjQgMTcuOTkxIDI0IDEyWiIgZmlsbD0iIzE4NzdGMiIvPgo8L3N2Zz4K"
-                alt="Facebook"
-                style={{ width: 20, height: 20 }}
-              />
-            }
+            startIcon={<FacebookIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -261,7 +213,6 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        {/* Register Link */}
         <p className="text-center text-sm text-gray-300 mt-6">
           Don&apos;t have an account?{" "}
           <span 
