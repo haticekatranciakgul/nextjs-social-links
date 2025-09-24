@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TextField, Button, InputAdornment, Typography } from "@mui/material";
+import { TextField, Button, InputAdornment, Typography, Stack } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -207,17 +207,11 @@ export default function LoginPage() {
         </div>
 
         {/* Social Buttons */}
-        <div className="flex gap-3">
+        <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
           <Button
             variant="outlined"
             onClick={handleGoogleSignIn}
-            startIcon={
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjU2IDEyLjI1QzIyLjU2IDExLjQ3IDIyLjQ5IDEwLjcyIDIyLjM2IDEwSDEyVjE0LjI2SDE3LjkyQzE3LjY2IDE1LjYgMTYuOSAxNi43NyAxNS43MyAxNy41M1YyMC41NkgxOS4zNkMyMS4wOSAxOC45OCAyMi41NiAxNS45MiAyMi56IDEyLjI1WiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTIgMjMuMjVDMTUuMDQgMjMuMjUgMTcuNTEgMjIuMjEgMTkuMzYgMjAuNTZMMTUuNzMgMTcuNTNDMTQuNjEgMTguMjUgMTMuMTMgMTguNjggMTIgMTguNjhDOS4wNSAxOC42OCA2LjU5IDE2LjgyIDUuNjkgMTQuMzZIMlYxNy40MkMzLjgyIDIxLjAzIDcuNjEgMjMuMjUgMTIgMjMuMjVaIiBmaWxsPSIjMzRBODUzIi8+CjxwYXRoIGQ9Ik01LjY5IDE0LjM2QzUuNSAxMy44MiA1LjM5IDEzLjI0IDUuMzkgMTIuNjNDNS4zOSAxMi4wMiA1LjUgMTEuNDQgNS42OSAxMC45VjcuODRIMkMxLjM2IDkuMTMgMSAxMC44NCAxIDEyLjYzQzEgMTQuNDIgMS4zNiAxNi4xMyAyIDE3LjQyTDUuNjkgMTQuMzZaIiBmaWxsPSIjRkJCQzA0Ii8+CjxwYXRoIGQ9Ik0xMiA2LjU4QzEzLjUyIDYuNTggMTQuODkgNy4xMyAxNS45NSA4LjEzTDE5LjMxIDQuNzdDMTcuNSAzLjA5IDE1LjAzIDIgMTIgMkM3LjYxIDIgMy44MiA0LjIyIDIgNy44NEw1LjY5IDEwLjlDNi41OSA4LjQ0IDkuMDUgNi41OCAxMiA2LjU4WiIgZmlsbD0iI0VBNDMzNSIvPgo8L3N2Zz4K"
-                alt="Google"
-                style={{ width: 20, height: 20 }}
-              />
-            }
+            startIcon={<GoogleIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -237,13 +231,7 @@ export default function LoginPage() {
           <Button
             variant="outlined"
             onClick={handleFacebookSignIn}
-            startIcon={
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI0IDEyQzI0IDUuMzcyNTggMTguNjI3NCAwIDEyIDBTMCA1LjM3MjU4IDAgMTJDMCAxNy45OTEgNC4zODgzNyAyMi45NTQxIDEwLjEyNSAyMy44NTQyVjE1LjQ2ODhINy4wNzgxMlYxMkgxMC4xMjVWOS4zNTYyNUMxMC4xMjUgNi4zNDg3NSAxMS45MTY2IDQuNjg3NSAxNC42NTggNC42ODc1QzE1Ljk3MDEgNC42ODc1IDE3LjM0MzggNC45Mjc1IDE3LjM0MzggNC45Mjc1VjcuODc1SDE1LjgzMDlDMTQuMzQgNy44NzUgMTMuODc1IDguOCAxMy44NzUgOS43NVYxMkgxNy4yMDMxTDE2LjY3MTEgMTUuNDY4OEgxMy44NzVWMjMuODU0MkMxOS42MTE2IDIyLjk1NDEgMjQgMTcuOTkxIDI0IDEyWiIgZmlsbD0iIzE4NzdGMiIvPgo8L3N2Zz4K"
-                alt="Facebook"
-                style={{ width: 20, height: 20 }}
-              />
-            }
+            startIcon={<FacebookIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -259,7 +247,7 @@ export default function LoginPage() {
           >
             Facebook
           </Button>
-        </div>
+        </Stack>
 
         {/* Register Link */}
         <p className="text-center text-sm text-gray-300 mt-6">

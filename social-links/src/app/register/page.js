@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TextField, Button, InputAdornment, Typography } from "@mui/material";
+import { TextField, Button, InputAdornment, Typography, Stack } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import PersonIcon from "@mui/icons-material/Person";
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import AuthLayout from "../../components/AuthLayout";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -210,18 +212,11 @@ export default function RegisterPage() {
           </Typography>
         </div>
 
-        <div className="flex gap-3">
+        <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
           <Button
             variant="outlined"
             onClick={handleGoogleSignUp}
-            startIcon={
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.66 15.6 16.9 16.77 15.73 17.53V20.56H19.36C21.09 18.98 22.56 15.92 22.56 12.25Z" fill="#4285F4"/>
-                <path d="M12 23.25C15.04 23.25 17.51 22.21 19.36 20.56L15.73 17.53C14.61 18.25 13.13 18.68 12 18.68C9.05 18.68 6.59 16.82 5.69 14.36H2V17.42C3.82 21.03 7.61 23.25 12 23.25Z" fill="#34A853"/>
-                <path d="M5.69 14.36C5.5 13.82 5.39 13.24 5.39 12.63C5.39 12.02 5.5 11.44 5.69 10.9V7.84H2C1.36 9.13 1 10.84 1 12.63C1 14.42 1.36 16.13 2 17.42L5.69 14.36Z" fill="#FBBC04"/>
-                <path d="M12 6.58C13.52 6.58 14.89 7.13 15.95 8.13L19.31 4.77C17.5 3.09 15.03 2 12 2C7.61 2 3.82 4.22 2 7.84L5.69 10.9C6.59 8.44 9.05 6.58 12 6.58Z" fill="#EA4335"/>
-              </svg>
-            }
+            startIcon={<GoogleIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -241,11 +236,7 @@ export default function RegisterPage() {
           <Button
             variant="outlined"
             onClick={handleFacebookSignUp}
-            startIcon={
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M24 12C24 5.37258 18.6274 0 12 0S0 5.37258 0 12C0 17.991 4.38837 22.9541 10.125 23.8542V15.4688H7.07812V12H10.125V9.35625C10.125 6.34875 11.9166 4.6875 14.658 4.6875C15.9701 4.6875 17.3438 4.9275 17.3438 4.9275V7.875H15.8309C14.34 7.875 13.875 8.8 13.875 9.75V12H17.2031L16.6711 15.4688H13.875V23.8542C19.6116 22.9541 24 17.991 24 12Z" fill="#1877F2"/>
-              </svg>
-            }
+            startIcon={<FacebookIcon />}
             sx={{
               flex: 1,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -261,7 +252,7 @@ export default function RegisterPage() {
           >
             Facebook
           </Button>
-        </div>
+        </Stack>
 
         <p className="text-center text-sm text-gray-300 mt-6">
           Already have an account?{" "}
