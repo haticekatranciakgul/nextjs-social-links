@@ -111,13 +111,17 @@ export default function RegisterPage() {
       // Başarılı kayıt mesajı
       setAlertState({
         open: true,
-        message: "Google ile kayıt başarılı! Anasayfaya yönlendiriliyorsunuz...",
+        message: "Google ile kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...",
         severity: "success"
       });
       
+      console.log("Yönlendirme başlıyor...");
+      
+      // Daha kısa bir süre ve farklı bir yönlendirme hedefi
       setTimeout(() => {
-        router.push("/");
-      }, 1500);
+        console.log("Login sayfasına yönlendiriliyor...");
+        router.push("/login");  // "/" yerine "/login" kullan
+      }, 1000);  // 1500ms yerine 1000ms
     } catch (error) {
       console.error("Google signup error:", error);
       
