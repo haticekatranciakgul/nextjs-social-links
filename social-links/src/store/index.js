@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/authSlice";
-import linksReducer from "../features/links/linksSlice";
+import authSlice from "../features/auth/authSlice"; // Features klasöründen import
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer,
-    links: linksReducer,
+    auth: authSlice,
   },
 });
+
+export default store;
