@@ -51,15 +51,15 @@ export default function LoginPage() {
       let errorMessage = error.message;
       
       if (error.code === "auth/invalid-credential") {
-        errorMessage = "E-mail veya şifre hatalı. Lütfen bilgilerinizi kontrol edin.";
+        errorMessage = "Email or password is incorrect. Please check your credentials.";
       } else if (error.code === "auth/user-not-found") {
-        errorMessage = "Bu e-mail adresi ile kayıtlı bir hesap bulunamadı. Lütfen kayıt olun.";
+        errorMessage = "No account found with this email address. Please sign up first.";
       } else if (error.code === "auth/wrong-password") {
-        errorMessage = "Hatalı şifre. Lütfen şifrenizi kontrol edin.";
+        errorMessage = "Incorrect password. Please check your password.";
       } else if (error.code === "auth/too-many-requests") {
-        errorMessage = "Çok fazla hatalı giriş denemesi. Lütfen daha sonra tekrar deneyin.";
+        errorMessage = "Too many failed login attempts. Please try again later.";
       } else if (error.code === "auth/user-disabled") {
-        errorMessage = "Bu hesap devre dışı bırakılmış.";
+        errorMessage = "This account has been disabled.";
       }
       
       setAlertState({
@@ -86,7 +86,7 @@ export default function LoginPage() {
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
-        // Yeni kullanıcı - Firestore'a kaydet
+        // User registration - Saving to Firestore
         await setDoc(userDocRef, {
           email: user.email,
           username: username,
@@ -102,7 +102,7 @@ export default function LoginPage() {
         });
       }
       
-      // Başarılı giriş mesajı
+      // Success message
       setAlertState({
         open: true,
         message: "Google login successful! Redirecting to dashboard...",

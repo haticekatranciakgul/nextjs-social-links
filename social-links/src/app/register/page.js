@@ -22,7 +22,7 @@ export default function RegisterPage() {
     severity: "error" // "error", "warning", "info", "success"
   });
 
-  // React Hook Form entegrasyonu
+  // React Hook Form integration
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       username: "",
@@ -46,7 +46,7 @@ export default function RegisterPage() {
         uid: user.uid,
       });
 
-      // Başarılı kayıt mesajı
+      // Success message
       setAlertState({
         open: true,
         message: "Account created successfully! Redirecting to sign in page...",
@@ -54,22 +54,22 @@ export default function RegisterPage() {
       });
       
       setTimeout(() => {
-        router.push("/login");  // Ana sayfa yerine login sayfasına yönlendir
+        router.push("/login");  // Redirect to login page instead of home page
       }, 1500);
     } catch (error) {
       console.error(error);
       
-      // Firebase hata kodlarını daha anlaşılır hale getirelim
+      // Make Firebase error codes more understandable
       let errorMessage = error.message;
       
       if (error.code === "auth/email-already-in-use") {
-        errorMessage = "Bu email adresi ile daha önce kayıt olunmuş. Lütfen giriş yapmayı deneyin veya başka bir email adresi kullanın.";
+        errorMessage = "This email has already been registered. Please sign in or use a different email address.";
       } else if (error.code === "auth/weak-password") {
-        errorMessage = "Şifre çok zayıf. Lütfen en az 6 karakterli daha güçlü bir şifre kullanın.";
+        errorMessage = "Password is too weak. Please use a stronger password with at least 6 characters.";
       } else if (error.code === "auth/invalid-email") {
-        errorMessage = "Geçersiz email formatı. Lütfen geçerli bir email adresi girin.";
+        errorMessage = "Invalid email format. Please enter a valid email address.";
       } else if (error.code === "auth/operation-not-allowed") {
-        errorMessage = "Email ve şifre ile kayıt şu anda devre dışı.";
+        errorMessage = "Registration with email and password is currently disabled.";
       }
       
       setAlertState({
@@ -108,36 +108,36 @@ export default function RegisterPage() {
         });
       }
       
-      // Başarılı kayıt mesajı
+      // Success message
       setAlertState({
         open: true,
-        message: "Google ile kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...",
+        message: "Google sign up successful! Redirecting to login page...",
         severity: "success"
       });
       
-      console.log("Yönlendirme başlıyor...");
+      console.log("Redirection starting...");
       
-      // Daha kısa bir süre ve farklı bir yönlendirme hedefi
+      // Shorter duration and different redirect target
       setTimeout(() => {
-        console.log("Login sayfasına yönlendiriliyor...");
-        router.push("/login");  // "/" yerine "/login" kullan
-      }, 1000);  // 1500ms yerine 1000ms
+        console.log("Redirecting to login page...");
+        router.push("/login");  // Use "/login" instead of "/"
+      }, 1000);  // 1000ms instead of 1500ms
     } catch (error) {
       console.error("Google signup error:", error);
       
-      // Google signup için özel hata mesajları
+      // Special error messages for Google signup
       let errorMessage = error.message;
       
       if (error.code === "auth/account-exists-with-different-credential") {
-        errorMessage = "Bu email adresi ile daha önce farklı bir yöntemle kayıt olunmuş. Lütfen diğer giriş yöntemini deneyin.";
+        errorMessage = "This email has been previously registered with a different method. Please try the other sign-in method.";
       } else if (error.code === "auth/email-already-in-use") {
-        errorMessage = "Bu email adresi ile daha önce kayıt olunmuş. Lütfen giriş yapmayı deneyin veya başka bir email adresi kullanın.";
+        errorMessage = "This email has already been registered. Please sign in or use a different email address.";
       } else if (error.code === "auth/popup-closed-by-user") {
-        errorMessage = "Google giriş penceresi kapatıldı. Lütfen tekrar deneyin.";
+        errorMessage = "Google sign-in window was closed. Please try again.";
       } else if (error.code === "auth/cancelled-popup-request") {
-        errorMessage = "İşlem iptal edildi. Lütfen tekrar deneyin.";
+        errorMessage = "Operation canceled. Please try again.";
       } else if (error.code === "auth/popup-blocked") {
-        errorMessage = "Tarayıcınız popup penceresini engelledi. Lütfen popup izinlerini kontrol edin.";
+        errorMessage = "Your browser blocked the popup window. Please check your popup permissions.";
       }
       
       setAlertState({
