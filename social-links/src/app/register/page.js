@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TextField, Button, InputAdornment, Typography, Stack, Divider } from "@mui/material";
+import { TextField, Button, InputAdornment, Typography, Stack, Divider, Alert } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import PersonIcon from "@mui/icons-material/Person";
@@ -11,35 +11,72 @@ import AuthLayout from "../../components/AuthLayout";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useForm, Controller } from "react-hook-form";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alertState, setAlertState] = useState({
+    open: false,
+    message: "",
+    severity: "error" // "error", "warning", "info", "success"
+  });
 
-  const handleRegister = async () => {
-    if (!email || !password || !username) return;
-    
+  // React Hook Form entegrasyonu
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: ""
+    }
+  });
+
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
       await setDoc(doc(db, "users", user.uid), {
-        email,
-        username,
+        email: data.email,
+        username: data.username,
         createdAt: new Date(),
       });
 
-      await setDoc(doc(db, "usernames", username), {
+      await setDoc(doc(db, "usernames", data.username), {
         uid: user.uid,
       });
 
-      router.push("/");
+      // Başarılı kayıt mesajı
+      setAlertState({
+        open: true,
+        message: "Account created successfully! Redirecting to sign in page...",
+        severity: "success"
+      });
+      
+      setTimeout(() => {
+        router.push("/login");  // Ana sayfa yerine login sayfasına yönlendir
+      }, 1500);
     } catch (error) {
       console.error(error);
-      alert("Error: " + error.message);
+      
+      // Firebase hata kodlarını daha anlaşılır hale getirelim
+      let errorMessage = error.message;
+      
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Bu email adresi ile daha önce kayıt olunmuş. Lütfen giriş yapmayı deneyin veya başka bir email adresi kullanın.";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Şifre çok zayıf. Lütfen en az 6 karakterli daha güçlü bir şifre kullanın.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Geçersiz email formatı. Lütfen geçerli bir email adresi girin.";
+      } else if (error.code === "auth/operation-not-allowed") {
+        errorMessage = "Email ve şifre ile kayıt şu anda devre dışı.";
+      }
+      
+      setAlertState({
+        open: true,
+        message: errorMessage,
+        severity: "error"
+      });
     } finally {
       setLoading(false);
     }
@@ -71,11 +108,39 @@ export default function RegisterPage() {
         });
       }
       
-      console.log("Google signup successful:", user.email);
-      router.push("/");
+      // Başarılı kayıt mesajı
+      setAlertState({
+        open: true,
+        message: "Google ile kayıt başarılı! Anasayfaya yönlendiriliyorsunuz...",
+        severity: "success"
+      });
+      
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
     } catch (error) {
       console.error("Google signup error:", error);
-      alert("Google signup failed: " + error.message);
+      
+      // Google signup için özel hata mesajları
+      let errorMessage = error.message;
+      
+      if (error.code === "auth/account-exists-with-different-credential") {
+        errorMessage = "Bu email adresi ile daha önce farklı bir yöntemle kayıt olunmuş. Lütfen diğer giriş yöntemini deneyin.";
+      } else if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Bu email adresi ile daha önce kayıt olunmuş. Lütfen giriş yapmayı deneyin veya başka bir email adresi kullanın.";
+      } else if (error.code === "auth/popup-closed-by-user") {
+        errorMessage = "Google giriş penceresi kapatıldı. Lütfen tekrar deneyin.";
+      } else if (error.code === "auth/cancelled-popup-request") {
+        errorMessage = "İşlem iptal edildi. Lütfen tekrar deneyin.";
+      } else if (error.code === "auth/popup-blocked") {
+        errorMessage = "Tarayıcınız popup penceresini engelledi. Lütfen popup izinlerini kontrol edin.";
+      }
+      
+      setAlertState({
+        open: true,
+        message: errorMessage,
+        severity: "error"
+      });
     }
   };
 
@@ -86,117 +151,190 @@ export default function RegisterPage() {
   return (
     <AuthLayout title="SIGN UP" subtitle="Create your account to get started">
       <div className="space-y-6">
-        <TextField
-          fullWidth
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <PersonIcon sx={{ color: '#9ca3af' }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: '460px',
-            maxWidth: '100%',
-            mb: 3,
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '12px',
-              color: 'white',
-              height: '56px',
-              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-            },
-            '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
-          }}
-        />
+        {alertState.open && (
+          <Alert 
+            severity={alertState.severity} 
+            onClose={() => setAlertState(prev => ({...prev, open: false}))}
+            sx={{ mb: 2 }}
+          >
+            {alertState.message}
+          </Alert>
+        )}
 
-        <TextField
-          fullWidth
-          placeholder="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <EmailIcon sx={{ color: '#9ca3af' }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: '460px',
-            maxWidth: '100%',
-            mb: 3,
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '12px',
-              color: 'white',
-              height: '56px',
-              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-            },
-            '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
-          }}
-        />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            name="username"
+            control={control}
+            rules={{ 
+              required: "Username is required",
+              minLength: { 
+                value: 3, 
+                message: "Username must be at least 3 characters" 
+              },
+              pattern: { 
+                value: /^[a-z0-9_]+$/, 
+                message: "Username can only contain lowercase letters, numbers and underscores" 
+              }
+            }}
+            render={({ field }) => (
+              <TextField
+                fullWidth
+                placeholder="Username"
+                error={!!errors.username}
+                helperText={errors.username?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonIcon sx={{ color: errors.username ? 'error.main' : '#9ca3af' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: '460px',
+                  maxWidth: '100%',
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    height: '56px',
+                    '& fieldset': { borderColor: errors.username ? 'error.main' : 'rgba(255, 255, 255, 0.2)' },
+                    '&:hover fieldset': { borderColor: errors.username ? 'error.main' : 'rgba(255, 255, 255, 0.3)' },
+                    '&.Mui-focused fieldset': { borderColor: errors.username ? 'error.main' : '#8b5cf6' },
+                  },
+                  '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
+                  '& .MuiFormHelperText-root': {
+                    color: 'error.main',
+                    marginLeft: 1,
+                    marginTop: 0.5
+                  }
+                }}
+                {...field}
+              />
+            )}
+          />
 
-        <TextField
-          fullWidth
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <LockIcon sx={{ color: '#9ca3af' }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: '460px',
-            maxWidth: '100%',
-            mb: 4,
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '12px',
-              color: 'white',
-              height: '56px',
-              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-            },
-            '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
-          }}
-        />
+          <Controller
+            name="email"
+            control={control}
+            rules={{ 
+              required: "Email is required",
+              pattern: { 
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
+                message: "Invalid email address" 
+              }
+            }}
+            render={({ field }) => (
+              <TextField
+                fullWidth
+                placeholder="E-mail"
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon sx={{ color: errors.email ? 'error.main' : '#9ca3af' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: '460px',
+                  maxWidth: '100%',
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    height: '56px',
+                    '& fieldset': { borderColor: errors.email ? 'error.main' : 'rgba(255, 255, 255, 0.2)' },
+                    '&:hover fieldset': { borderColor: errors.email ? 'error.main' : 'rgba(255, 255, 255, 0.3)' },
+                    '&.Mui-focused fieldset': { borderColor: errors.email ? 'error.main' : '#8b5cf6' },
+                  },
+                  '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
+                  '& .MuiFormHelperText-root': {
+                    color: 'error.main',
+                    marginLeft: 1,
+                    marginTop: 0.5
+                  }
+                }}
+                {...field}
+              />
+            )}
+          />
 
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={handleRegister}
-          disabled={loading}
-          sx={{
-            width: '460px',
-            maxWidth: '100%',
-            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
-            color: 'white',
-            textTransform: 'none',
-            fontSize: '16px',
-            padding: '16px',
-            borderRadius: '12px',
-            fontWeight: 600,
-            height: '56px',
-            mb: 4,
-            '&:hover': { background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)' },
-            '&:disabled': { background: 'rgba(139, 92, 246, 0.5)' },
-          }}
-        >
-          {loading ? "Creating Account..." : "Sign up"}
-        </Button>
+          <Controller
+            name="password"
+            control={control}
+            rules={{ 
+              required: "Password is required",
+              minLength: { 
+                value: 6, 
+                message: "Password must be at least 6 characters" 
+              }
+            }}
+            render={({ field }) => (
+              <TextField
+                fullWidth
+                type="password"
+                placeholder="Password"
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockIcon sx={{ color: errors.password ? 'error.main' : '#9ca3af' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: '460px',
+                  maxWidth: '100%',
+                  mb: 4,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    height: '56px',
+                    '& fieldset': { borderColor: errors.password ? 'error.main' : 'rgba(255, 255, 255, 0.2)' },
+                    '&:hover fieldset': { borderColor: errors.password ? 'error.main' : 'rgba(255, 255, 255, 0.3)' },
+                    '&.Mui-focused fieldset': { borderColor: errors.password ? 'error.main' : '#8b5cf6' },
+                  },
+                  '& .MuiOutlinedInput-input::placeholder': { color: '#9ca3af', opacity: 1 },
+                  '& .MuiFormHelperText-root': {
+                    color: 'error.main',
+                    marginLeft: 1,
+                    marginTop: 0.5
+                  }
+                }}
+                {...field}
+              />
+            )}
+          />
+
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            disabled={loading}
+            sx={{
+              width: '460px',
+              maxWidth: '100%',
+              background: 'linear-gradient(90deg, #501794 0%, #3E70A1 100%)',
+              color: 'white',
+              textTransform: 'none',
+              fontSize: '16px',
+              padding: '16px',
+              borderRadius: '12px',
+              fontWeight: 600,
+              height: '56px',
+              mb: 4,
+              '&:hover': { background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)' },
+              '&:disabled': { background: 'rgba(139, 92, 246, 0.5)' },
+            }}
+          >
+            {loading ? "Creating Account..." : "Sign up"}
+          </Button>
+        </form>
 
         <Divider></Divider>
 
@@ -258,7 +396,7 @@ export default function RegisterPage() {
             component="span"
             variant="body2"
             sx={{ 
-              color: '#9D5CE9', // blue-400 renk değeri
+              color: '#9D5CE9',
               cursor: 'pointer',
               '&:hover': { 
                 textDecoration: 'underline'
