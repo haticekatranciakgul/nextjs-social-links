@@ -19,8 +19,9 @@ export default function AuthLayout({ title, subtitle, children }) {
       }}
     >
       {/* Sol Taraf - Adventure Text */}
-      <div className="flex-1 flex items-end justify-start p-16">
-        <div className="mb-32">
+      <div className="flex-1 flex items-center justify-center p-16" 
+      sx={{ justifyContent: 'center', alignItems: 'center', padding: '64px' }}>
+        <div>
           <Typography 
             sx={{
               fontFamily: 'Poppins, sans-serif',
@@ -28,7 +29,8 @@ export default function AuthLayout({ title, subtitle, children }) {
               fontSize: '50.68px',
               lineHeight: '1.2',
               color: '#FFFFFF',
-              mb: 0
+              mb: 0,
+              textAlign: 'center'
             }}
           >
             SIGN IN TO YOUR
@@ -43,7 +45,8 @@ export default function AuthLayout({ title, subtitle, children }) {
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mt: 0
+              mt: 0,
+              textAlign: 'center'
             }}
           >
             ADVENTURE!
