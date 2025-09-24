@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TextField, Button, InputAdornment, Typography, Stack } from "@mui/material";
+import { TextField, Button, InputAdornment, Typography, Stack, Divider } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -170,7 +170,7 @@ export default function LoginPage() {
           sx={{
             width: '460px',
             maxWidth: '100%',
-            background: 'linear-gradient(90deg, #501794 0%, #3E70A1 100%)',
+            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
             color: 'white',
             textTransform: 'none',
             fontSize: '16px',
@@ -191,23 +191,22 @@ export default function LoginPage() {
         </Button>
 
         {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-1 h-px bg-gray-600"></div>
-        </div>
+        
+          <Divider></Divider>
 
         {/* Or continue with text */}
-        <div className="text-center mb-4">
+        <div className="text-center">
           <Typography sx={{ 
             fontFamily: 'Poppins, sans-serif',
             fontSize: '12px', 
-            color: '#B6B6B6' 
+            color: '#B6B6B6' , my:2
           }}>
             Or continue with
           </Typography>
         </div>
 
         {/* Social Buttons */}
-        <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
+        <Stack direction="row" spacing={2} sx={{ width: '100%',mb:4  }}>
           <Button
             variant="outlined"
             onClick={handleGoogleSignIn}
@@ -250,15 +249,23 @@ export default function LoginPage() {
         </Stack>
 
         {/* Register Link */}
-        <p className="text-center text-sm text-gray-300 mt-6">
+         <Typography variant="body2" sx={{ textAlign: 'center', color: '#9CA3AF' }}>
           Don&apos;t have an account?{" "}
-          <span 
-            className="text-blue-400 cursor-pointer hover:underline"
+          <Typography 
+            component="span"
+            variant="body2"
+            sx={{ 
+              color: '#9D5CE9', // blue-400 renk değeri
+              cursor: 'pointer',
+              '&:hover': { 
+                textDecoration: 'underline'
+              }
+            }}
             onClick={() => router.push("/register")}
-          >
+            >
             Sign up
-          </span>
-        </p>
+         </Typography>
+        </Typography>
       </div>
     </AuthLayout>
   );
