@@ -27,16 +27,20 @@ export default function LinksPage() {
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Auth kontrolü
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+  // Auth kontrolünü kaldırıyoruz - artık herkese açık
+  // useEffect(() => {
+  //   if (!authLoading && !user) {
+  //     router.push("/login");
+  //   }
+  // }, [user, authLoading, router]);
 
-  // Profile ve Links'leri çek
+  // Profile ve Links'leri çek - user olmasa bile çalışacak şekilde düzenliyoruz
   const fetchData = useCallback(async () => {
-    if (!user?.uid) return;
+    // Eğer user yoksa, default bir user ID kullanabiliriz veya URL'den alırız
+    if (!user?.uid) {
+      setLoading(false);
+      return; // Şimdilik user yoksa boş bırakıyoruz
+    }
     
     try {
       // Profile bilgilerini çek
@@ -81,7 +85,8 @@ export default function LinksPage() {
     window.open(finalUrl, '_blank');
   };
 
-  if (!user || authLoading || loading) {
+  // Loading durumunu sadece data loading için kullanıyoruz
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{
         backgroundImage: "url('/background.png')",
@@ -118,7 +123,7 @@ export default function LinksPage() {
         {/* Profile Section */}
         <Box sx={{ mb: 4 }}>
           <Avatar
-            src={user.photoURL || profileData.photoURL}
+            src={user?.photoURL || profileData.photoURL}
             sx={{ 
               width: 100, 
               height: 100, 
@@ -127,14 +132,14 @@ export default function LinksPage() {
               border: '3px solid rgba(255, 255, 255, 0.5)'
             }}
           >
-            {(profileData.displayName || user.displayName)?.[0] || user.email?.[0] || 'U'}
+            {(profileData.displayName || user?.displayName)?.[0] || user?.email?.[0] || 'U'}
           </Avatar>
           
           <Typography 
             variant="h5" 
             sx={{ color: 'white', fontWeight: 'bold', mb: 1, textAlign: 'center' }}
           >
-            @{profileData.username || user.email?.split('@')[0] || 'user'}
+            @{profileData.username || user?.email?.split('@')[0] || 'user'}
           </Typography>
 
           {profileData.displayName && (
@@ -209,21 +214,23 @@ export default function LinksPage() {
               <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 2 }}>
                 No links added yet
               </Typography>
-              <Button
-                variant="contained"
-                startIcon={<EditIcon />}
-                onClick={() => router.push('/dashboard')}
-                sx={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  color: 'white',
-                  '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.3)',
-                  }
-                }}
-              >
-                Add Your First Link
-              </Button>
+              {user && (
+                <Button
+                  variant="contained"
+                  startIcon={<EditIcon />}
+                  onClick={() => router.push('/dashboard')}
+                  sx={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)',
+                    color: 'white',
+                    '&:hover': {
+                      background: 'rgba(255, 255, 255, 0.3)',
+                    }
+                  }}
+                >
+                  Add Your First Link
+                </Button>
+              )}
             </Box>
           ) : (
             links.map((link) => {
@@ -269,22 +276,6 @@ export default function LinksPage() {
           )}
         </Box>
 
-        {/* Edit Profile Button */}
-        <Button
-          variant="outlined"
-          startIcon={<EditIcon />}
-          onClick={() => router.push('/dashboard')}
-          sx={{
-            borderColor: 'rgba(255, 255, 255, 0.3)',
-            color: 'white',
-            '&:hover': {
-              borderColor: 'white',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            }
-          }}
-        >
-          Edit Profile & Links
-        </Button>
       </Box>
     </div>
   );
