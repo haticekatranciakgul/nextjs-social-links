@@ -22,9 +22,10 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkIcon from "@mui/icons-material/Link";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DashboardLayout from "../../components/DashboardLayout";
 import { db } from "../../lib/firebase";
-import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -40,13 +41,10 @@ export default function Dashboard() {
     linkedin: ""
   });
 
-  // Link Form State
-  const [linkForm, setLinkForm] = useState({
-    title: "",
-    subtitle: "",
-    url: "",
-    icon: "link"
-  });
+  // Link Forms State - Array of link objects  
+  const [linkForms, setLinkForms] = useState([]);
+  // Existing Links State
+  const [existingLinks, setExistingLinks] = useState([]);
 
   // Loading States
   const [loading, setLoading] = useState(false);
@@ -74,8 +72,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user?.uid) return;
 
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
+        // Profile bilgilerini çek
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
@@ -88,12 +87,21 @@ export default function Dashboard() {
             linkedin: data.linkedin || ""
           });
         }
+
+        // Mevcut linkleri çek
+        const linksSnapshot = await getDocs(collection(db, "users", user.uid, "links"));
+        const linksData = linksSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setExistingLinks(linksData.sort((a, b) => (a.order || 0) - (b.order || 0)));
+
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, [user]);
 
   const handleProfileSave = async () => {
@@ -121,40 +129,153 @@ export default function Dashboard() {
     }));
   };
 
-  const handleLinkFormChange = (field, value) => {
-    setLinkForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  // Add new link form
+  const addNewLinkForm = () => {
+    const newId = Date.now();
+    setLinkForms(prev => [...prev, {
+      id: newId,
+      title: "",
+      subtitle: "",
+      url: "",
+      icon: "link"
+    }]);
   };
 
-  const handleLinkSave = async () => {
-    if (!user?.uid || !linkForm.title || !linkForm.url) return;
+  // Remove link form
+  const removeLinkForm = (id) => {
+    setLinkForms(prev => prev.filter(form => form.id !== id));
+  };
+
+  // Update link form
+  const updateLinkForm = (id, field, value) => {
+    setLinkForms(prev => prev.map(form => 
+      form.id === id ? { ...form, [field]: value } : form
+    ));
+  };
+
+  // Delete existing link
+  const deleteExistingLink = async (linkId) => {
+    if (!user?.uid) return;
 
     setLoading(true);
     try {
-      await addDoc(collection(db, "users", user.uid, "links"), {
-        title: linkForm.title,
-        description: linkForm.subtitle,
-        url: linkForm.url,
-        icon: linkForm.icon,
-        order: Date.now(),
-        clicks: 0,
-        createdAt: new Date()
-      });
-
-      // Reset form
-      setLinkForm({
-        title: "",
-        subtitle: "",
-        url: "",
-        icon: "link"
-      });
-
-      alert("Link added successfully!");
+      await deleteDoc(doc(db, "users", user.uid, "links", linkId));
+      setExistingLinks(prev => prev.filter(link => link.id !== linkId));
+      alert("Link deleted successfully!");
     } catch (error) {
-      console.error("Error adding link:", error);
-      alert("Error adding link");
+      console.error("Error deleting link:", error);
+      alert("Error deleting link");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update existing link
+  const updateExistingLink = (id, field, value) => {
+    setExistingLinks(prev => prev.map(link => 
+      link.id === id ? { ...link, [field]: value } : link
+    ));
+  };
+
+  // Save existing link changes
+  const saveExistingLink = async (linkId) => {
+    if (!user?.uid) return;
+
+    const linkToUpdate = existingLinks.find(link => link.id === linkId);
+    if (!linkToUpdate) return;
+
+    setLoading(true);
+    try {
+      await updateDoc(doc(db, "users", user.uid, "links", linkId), {
+        title: linkToUpdate.title,
+        description: linkToUpdate.description,
+        url: linkToUpdate.url,
+        icon: linkToUpdate.icon,
+        updatedAt: new Date()
+      });
+      alert("Link updated successfully!");
+    } catch (error) {
+      console.error("Error updating link:", error);
+      alert("Error updating link");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Save all existing links changes
+  const saveAllExistingLinks = async () => {
+    if (!user?.uid || existingLinks.length === 0) return;
+
+    setLoading(true);
+    try {
+      const promises = existingLinks.map(link => 
+        updateDoc(doc(db, "users", user.uid, "links", link.id), {
+          title: link.title,
+          description: link.description,
+          url: link.url,
+          icon: link.icon,
+          updatedAt: new Date()
+        })
+      );
+      
+      await Promise.all(promises);
+      alert("All links updated successfully!");
+    } catch (error) {
+      console.error("Error updating links:", error);
+      alert("Error updating links");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getIconComponent = (iconType) => {
+    const icons = {
+      github: GitHubIcon,
+      instagram: InstagramIcon,
+      linkedin: LinkedInIcon,
+      youtube: YouTubeIcon,
+      twitter: TwitterIcon,
+      link: LinkIcon
+    };
+    return icons[iconType] || LinkIcon;
+  };
+
+  // Save all links
+  const saveAllLinks = async () => {
+    if (!user?.uid) return;
+    
+    const validLinks = linkForms.filter(form => form.title && form.url);
+    if (validLinks.length === 0) return;
+
+    setLoading(true);
+    try {
+      const promises = validLinks.map(link => 
+        addDoc(collection(db, "users", user.uid, "links"), {
+          title: link.title,
+          description: link.subtitle,
+          url: link.url,
+          icon: link.icon,
+          order: Date.now(),
+          clicks: 0,
+          createdAt: new Date()
+        })
+      );
+      
+      await Promise.all(promises);
+      
+      // Refresh existing links
+      const linksSnapshot = await getDocs(collection(db, "users", user.uid, "links"));
+      const linksData = linksSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setExistingLinks(linksData.sort((a, b) => (a.order || 0) - (b.order || 0)));
+      
+      setLinkForms([]);
+      alert(`${validLinks.length} link(s) added successfully!`);
+    } catch (error) {
+      console.error("Error adding links:", error);
+      alert("Error adding links");
     } finally {
       setLoading(false);
     }
@@ -188,7 +309,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout currentPage="home">
-      <Box >
+      <Box>
         {/* Profile Section */}
         <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Profile Information
@@ -255,6 +376,31 @@ export default function Dashboard() {
               '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
             }}
           />
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+          <Button
+            variant="contained"
+            onClick={handleProfileSave}
+            disabled={loading}
+            sx={{
+              background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
+              color: 'white', 
+              textTransform: 'none',
+              fontSize: '14px',        // 16px'den 14px'e düşürdüm
+              padding: '8px 16px',     // 12px'den 8px 16px'e değiştirdim
+              borderRadius: '8px',
+              fontWeight: 600,
+              '&:hover': {
+                background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
+              },
+              '&:disabled': {
+                background: 'rgba(139, 92, 246, 0.5)',
+              },
+            }}
+          >
+            {loading ? "Saving..." : "Save Profile"}
+          </Button>
         </Box>
 
         <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
@@ -350,191 +496,442 @@ export default function Dashboard() {
           />
         </Box>
 
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={handleProfileSave}
-          disabled={loading}
-          sx={{
-            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
-            color: 'white', 
-            textTransform: 'none',
-            fontSize: '16px',
-            padding: '12px',
-            borderRadius: '8px',
-            fontWeight: 600,
-            '&:hover': {
-              background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
-            },
-            '&:disabled': {
-              background: 'rgba(139, 92, 246, 0.5)',
-            },
-
-          }}
-
-        >
-          {loading ? "Saving..." : "Save Profile"}
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            onClick={handleProfileSave}
+            disabled={loading}
+            sx={{
+              background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
+              color: 'white', 
+              textTransform: 'none',
+              fontSize: '14px',        // 16px'den 14px'e düşürdüm
+              padding: '8px 16px',     // 12px'den 8px 16px'e değiştirdim
+              borderRadius: '8px',
+              fontWeight: 600,
+              '&:hover': {
+                background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
+              },
+              '&:disabled': {
+                background: 'rgba(139, 92, 246, 0.5)',
+              },
+            }}
+          >
+            {loading ? "Saving..." : "Save Contacts"}
+          </Button>
+        </Box>
 
         <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
 
         {/* Links Section */}
-        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
-          Links
-        </Typography>
-
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
-          <TextField
-            fullWidth
-            label="Link Title"
-            value={linkForm.title}
-            onChange={(e) => handleLinkFormChange('title', e.target.value)}
-            placeholder="e.g., My Portfolio"
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: 'white' }}>
+            Links
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={addNewLinkForm}
             sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Subtitle (Optional)"
-            value={linkForm.subtitle}
-            onChange={(e) => handleLinkFormChange('subtitle', e.target.value)}
-            placeholder="Brief description"
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="URL"
-            value={linkForm.url}
-            onChange={(e) => handleLinkFormChange('url', e.target.value)}
-            placeholder="https://example.com"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <FormControl fullWidth sx={{
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
               color: 'white',
-              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-            },
-            '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-            '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-            '& .MuiSelect-icon': { color: 'rgba(255, 255, 255, 0.7)' },
-          }}>
-            <InputLabel>Icon</InputLabel>
-            <Select
-              value={linkForm.icon}
-              label="Icon"
-              onChange={(e) => handleLinkFormChange('icon', e.target.value)}
-            >
-              <MenuItem value="link">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LinkIcon fontSize="small" />
-                  Link
-                </Box>
-              </MenuItem>
-              <MenuItem value="github">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <GitHubIcon fontSize="small" />
-                  GitHub
-                </Box>
-              </MenuItem>
-              <MenuItem value="instagram">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <InstagramIcon fontSize="small" />
-                  Instagram
-                </Box>
-              </MenuItem>
-              <MenuItem value="linkedin">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LinkedInIcon fontSize="small" />
-                  LinkedIn
-                </Box>
-              </MenuItem>
-              <MenuItem value="youtube">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <YouTubeIcon fontSize="small" />
-                  YouTube
-                </Box>
-              </MenuItem>
-              <MenuItem value="twitter">
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TwitterIcon fontSize="small" />
-                  Twitter
-                </Box>
-              </MenuItem>
-            </Select>
-          </FormControl>
+              textTransform: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
+              },
+            }}
+          >
+            Add New
+          </Button>
         </Box>
 
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={handleLinkSave}
-          disabled={loading || !linkForm.title || !linkForm.url}
-          sx={{
-            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
-            color: 'white',
-            textTransform: 'none',
-            fontSize: '16px',
-            padding: '12px',
-            borderRadius: '8px',
-            fontWeight: 600,
-            mb: 2,
-            '&:hover': {
-              background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
-            },
-            '&:disabled': {
-              background: 'rgba(139, 92, 246, 0.5)',
-            },
-          }}
-        >
-          {loading ? "Adding..." : "Add Link"}
-        </Button>
+        {/* Existing Links as Editable Forms */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
+          {existingLinks.map((link) => (
+            <Box
+              key={link.id}
+              sx={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                p: 3,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <TextField
+                fullWidth
+                label="Link Title"
+                value={link.title || ''}
+                onChange={(e) => updateExistingLink(link.id, 'title', e.target.value)}
+                placeholder="e.g., My Portfolio"
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Subtitle (Optional)"
+                value={link.description || ''}
+                onChange={(e) => updateExistingLink(link.id, 'description', e.target.value)}
+                placeholder="Brief description"
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="URL"
+                value={link.url || ''}
+                onChange={(e) => updateExistingLink(link.id, 'url', e.target.value)}
+                placeholder="https://example.com"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LinkIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
 
-       
+              <FormControl fullWidth sx={{
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                  '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                },
+                '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                '& .MuiSelect-icon': { color: 'rgba(255, 255, 255, 0.7)' },
+              }}>
+                <InputLabel>Icon</InputLabel>
+                <Select
+                  value={link.icon || 'link'}
+                  label="Icon"
+                  onChange={(e) => updateExistingLink(link.id, 'icon', e.target.value)}
+                >
+                  <MenuItem value="link">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinkIcon fontSize="small" />
+                      Link
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="github">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <GitHubIcon fontSize="small" />
+                      GitHub
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="instagram">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <InstagramIcon fontSize="small" />
+                      Instagram
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="linkedin">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinkedInIcon fontSize="small" />
+                      LinkedIn
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="youtube">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <YouTubeIcon fontSize="small" />
+                      YouTube
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="twitter">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TwitterIcon fontSize="small" />
+                      Twitter
+                    </Box>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Only Remove Button */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<DeleteIcon fontSize="small" />}
+                  onClick={() => deleteExistingLink(link.id)}
+                  sx={{
+                    borderColor: 'rgba(244, 67, 54, 0.5)',
+                    color: 'rgba(244, 67, 54, 0.8)',
+                    textTransform: 'none',
+                    fontSize: '12px',
+                    '&:hover': {
+                      borderColor: '#f44336',
+                      backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    }
+                  }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Save Changes Button for Existing Links */}
+        {existingLinks.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <Button
+              variant="contained"
+              onClick={saveAllExistingLinks}
+              disabled={loading}
+              sx={{
+                background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
+                color: 'white', 
+                textTransform: 'none',
+                fontSize: '14px',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
+                },
+                '&:disabled': {
+                  background: 'rgba(139, 92, 246, 0.5)',
+                },
+              }}
+            >
+              {loading ? "Saving..." : "Save Changes"}
+            </Button>
+          </Box>
+        )}
+
+        {/* Dynamic Link Forms - New Links */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
+          {linkForms.map((form) => (
+            <Box
+              key={form.id}
+              sx={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                p: 3,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <TextField
+                fullWidth
+                label="Link Title"
+                value={form.title}
+                onChange={(e) => updateLinkForm(form.id, 'title', e.target.value)}
+                placeholder="e.g., My Portfolio"
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Subtitle (Optional)"
+                value={form.subtitle}
+                onChange={(e) => updateLinkForm(form.id, 'subtitle', e.target.value)}
+                placeholder="Brief description"
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="URL"
+                value={form.url}
+                onChange={(e) => updateLinkForm(form.id, 'url', e.target.value)}
+                placeholder="https://example.com"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LinkIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                  '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                }}
+              />
+
+              <FormControl fullWidth sx={{
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                  '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                },
+                '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                '& .MuiSelect-icon': { color: 'rgba(255, 255, 255, 0.7)' },
+              }}>
+                <InputLabel>Icon</InputLabel>
+                <Select
+                  value={form.icon}
+                  label="Icon"
+                  onChange={(e) => updateLinkForm(form.id, 'icon', e.target.value)}
+                >
+                  <MenuItem value="link">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinkIcon fontSize="small" />
+                      Link
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="github">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <GitHubIcon fontSize="small" />
+                      GitHub
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="instagram">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <InstagramIcon fontSize="small" />
+                      Instagram
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="linkedin">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinkedInIcon fontSize="small" />
+                      LinkedIn
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="youtube">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <YouTubeIcon fontSize="small" />
+                      YouTube
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="twitter">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TwitterIcon fontSize="small" />
+                      Twitter
+                    </Box>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Remove Button */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<DeleteIcon fontSize="small" />}
+                  onClick={() => removeLinkForm(form.id)}
+                  sx={{
+                    borderColor: 'rgba(244, 67, 54, 0.5)',
+                    color: 'rgba(244, 67, 54, 0.8)',
+                    textTransform: 'none',
+                    fontSize: '12px',
+                    '&:hover': {
+                      borderColor: '#f44336',
+                      backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    }
+                  }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Save Button - Only show if there are new forms */}
+        {linkForms.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              onClick={saveAllLinks}
+              disabled={loading || linkForms.filter(form => form.title && form.url).length === 0}
+              sx={{
+                background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
+                color: 'white',
+                textTransform: 'none',
+                fontSize: '14px',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
+                },
+                '&:disabled': {
+                  background: 'rgba(139, 92, 246, 0.5)',
+                },
+              }}
+            >
+              {loading ? "Saving..." : "Save New Links"}
+            </Button>
+          </Box>
+        )}
       </Box>
     </DashboardLayout>
   );
