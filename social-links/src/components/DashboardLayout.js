@@ -130,7 +130,7 @@ export default function DashboardLayout({ children, currentPage = "home" }) {
           sx={{
             width: '100%',
             maxWidth: 600,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgb(121 118 121 / 23%)',
             backdropFilter: 'blur(10px)',
             borderRadius: 3,
             padding: 4,

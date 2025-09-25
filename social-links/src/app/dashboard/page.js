@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
-import { 
-  TextField, 
-  Button, 
-  Box, 
-  Typography, 
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
   Divider,
   InputAdornment,
   IconButton,
@@ -53,12 +53,12 @@ export default function Dashboard() {
 
   // Auth kontrolü
   useEffect(() => {
-    console.log("Dashboard auth check:", { 
-      user: user?.email || 'No user', 
+    console.log("Dashboard auth check:", {
+      user: user?.email || 'No user',
       authLoading,
       timestamp: new Date().toISOString()
     });
-    
+
     // Sadece loading bittikten sonra kontrol et
     if (!authLoading) {
       if (!user) {
@@ -160,8 +160,8 @@ export default function Dashboard() {
     }
   };
 
-  console.log("🏠 Dashboard component render:", { 
-    userEmail: user?.email || 'No user', 
+  console.log("🏠 Dashboard component render:", {
+    userEmail: user?.email || 'No user',
     authLoading,
     timestamp: new Date().toISOString()
   });
@@ -188,12 +188,12 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout currentPage="home">
-      <Box>
+      <Box >
         {/* Profile Section */}
-        <Typography variant="h5" gutterBottom fontWeight="bold">
+        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Profile Information
         </Typography>
-        
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
           <TextField
             fullWidth
@@ -201,16 +201,38 @@ export default function Dashboard() {
             value={profileData.displayName}
             onChange={(e) => handleInputChange('displayName', e.target.value)}
             variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+            }}
           />
-          
+
           <TextField
             fullWidth
             label="Location"
             value={profileData.location}
             onChange={(e) => handleInputChange('location', e.target.value)}
             variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+            }}
           />
-          
+
           <TextField
             fullWidth
             label="Bio"
@@ -220,16 +242,28 @@ export default function Dashboard() {
             multiline
             rows={3}
             placeholder="Tell something about yourself..."
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
         </Box>
 
-        <Divider sx={{ my: 4 }} />
+        <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
 
         {/* Contacts Section */}
-        <Typography variant="h5" gutterBottom fontWeight="bold">
+        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Contacts
         </Typography>
-        
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
           <TextField
             fullWidth
@@ -244,6 +278,18 @@ export default function Dashboard() {
                   <InstagramIcon sx={{ color: '#E1306C' }} />
                 </InputAdornment>
               ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
             }}
           />
 
@@ -261,6 +307,18 @@ export default function Dashboard() {
                 </InputAdornment>
               ),
             }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
 
           <TextField
@@ -277,6 +335,18 @@ export default function Dashboard() {
                 </InputAdornment>
               ),
             }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
         </Box>
 
@@ -286,31 +356,33 @@ export default function Dashboard() {
           onClick={handleProfileSave}
           disabled={loading}
           sx={{
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-            color: 'white',
+            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
+            color: 'white', 
             textTransform: 'none',
             fontSize: '16px',
             padding: '12px',
             borderRadius: '8px',
             fontWeight: 600,
             '&:hover': {
-              background: 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
+              background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
             },
             '&:disabled': {
               background: 'rgba(139, 92, 246, 0.5)',
             },
+
           }}
+
         >
           {loading ? "Saving..." : "Save Profile"}
         </Button>
 
-        <Divider sx={{ my: 4 }} />
+        <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
 
         {/* Links Section */}
-        <Typography variant="h5" gutterBottom fontWeight="bold">
+        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Links
         </Typography>
-        
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
           <TextField
             fullWidth
@@ -318,16 +390,40 @@ export default function Dashboard() {
             value={linkForm.title}
             onChange={(e) => handleLinkFormChange('title', e.target.value)}
             placeholder="e.g., My Portfolio"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
-          
+
           <TextField
             fullWidth
             label="Subtitle (Optional)"
             value={linkForm.subtitle}
             onChange={(e) => handleLinkFormChange('subtitle', e.target.value)}
             placeholder="Brief description"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
-          
+
           <TextField
             fullWidth
             label="URL"
@@ -341,9 +437,32 @@ export default function Dashboard() {
                 </InputAdornment>
               ),
             }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
           />
 
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+              '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+            },
+            '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+            '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+            '& .MuiSelect-icon': { color: 'rgba(255, 255, 255, 0.7)' },
+          }}>
             <InputLabel>Icon</InputLabel>
             <Select
               value={linkForm.icon}
@@ -396,7 +515,7 @@ export default function Dashboard() {
           onClick={handleLinkSave}
           disabled={loading || !linkForm.title || !linkForm.url}
           sx={{
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+            background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
             color: 'white',
             textTransform: 'none',
             fontSize: '16px',
@@ -405,7 +524,7 @@ export default function Dashboard() {
             fontWeight: 600,
             mb: 2,
             '&:hover': {
-              background: 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
+              background: 'linear-gradient(90deg, #401560 0%, #2d5a88 100%)',
             },
             '&:disabled': {
               background: 'rgba(139, 92, 246, 0.5)',
@@ -415,22 +534,7 @@ export default function Dashboard() {
           {loading ? "Adding..." : "Add Link"}
         </Button>
 
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={() => window.open('/dashboard/links', '_blank')}
-          sx={{
-            borderColor: '#8b5cf6',
-            color: '#8b5cf6',
-            '&:hover': {
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
-              borderColor: '#7c3aed',
-            }
-          }}
-        >
-          View All Links
-        </Button>
+       
       </Box>
     </DashboardLayout>
   );
