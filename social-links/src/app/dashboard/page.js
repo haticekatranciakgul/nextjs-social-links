@@ -38,7 +38,8 @@ export default function Dashboard() {
     bio: "",
     instagram: "",
     github: "",
-    linkedin: ""
+    linkedin: "",
+    username: ""
   });
 
   // Link Forms State - Array of link objects  
@@ -84,7 +85,8 @@ export default function Dashboard() {
             bio: data.bio || "",
             instagram: data.instagram || "",
             github: data.github || "",
-            linkedin: data.linkedin || ""
+            linkedin: data.linkedin || "",
+            username: data.username || ""
           });
         }
 
@@ -310,6 +312,62 @@ export default function Dashboard() {
   return (
     <DashboardLayout currentPage="home">
       <Box>
+        {/* Public Profile Link Section */}
+        {profileData.username && (
+          <Box
+            sx={{
+              backgroundColor: "rgba(139, 92, 246, 0.2)",
+              border: "1px solid rgba(139, 92, 246, 0.3)",
+              borderRadius: "12px",
+              padding: 3,
+              mb: 4,
+              textAlign: "center"
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold", mb: 1 }}>
+              🌐 Public Profiliniz
+            </Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 2 }}>
+              Herkese açık profil linkiniz:
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 1,
+                cursor: "pointer",
+                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.15)" }
+              }}
+              onClick={() => {
+                const url = `${window.location.origin}/${profileData.username}`;
+                navigator.clipboard.writeText(url);
+                alert("Link kopyalandı!");
+              }}
+            >
+              <Typography variant="body1" sx={{ color: "white", fontFamily: "monospace" }}>
+                {window.location?.origin}/{profileData.username}
+              </Typography>
+              <LinkIcon sx={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "1rem" }} />
+            </Box>
+            <Button
+              variant="outlined"
+              size="small"
+              sx={{
+                mt: 2,
+                borderColor: "rgba(139, 92, 246, 0.5)",
+                color: "white",
+                "&:hover": { borderColor: "#8b5cf6", backgroundColor: "rgba(139, 92, 246, 0.1)" }
+              }}
+              onClick={() => window.open(`${window.location.origin}/${profileData.username}`, '_blank')}
+            >
+              Profili Görüntüle
+            </Button>
+          </Box>
+        )}
+
         {/* Profile Section */}
         <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Profile Information
