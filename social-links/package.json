@@ -22,7 +22,7 @@
     "react-hook-form": "^7.63.0",
     "react-redux": "^9.2.0"
   },
-  "engines": { "node": "18.x" },
+  "engines": { "node": "22.x" },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.13",
