@@ -86,20 +86,13 @@ export default function LoginPage() {
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
-        // User registration - Saving to Firestore
-        await setDoc(userDocRef, {
-          email: user.email,
-          username: username,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          createdAt: new Date(),
-          provider: 'google'
+        // ❌ Kullanıcı kayıtlı değil
+        setAlertState({
+          open: true,
+          message: "Bu Google hesabı ile kayıt yapılmamış. Lütfen önce kayıt olunuz.",
+          severity: "error"
         });
-        
-        // Username mapping
-        await setDoc(doc(db, "usernames", username), {
-          uid: user.uid,
-        });
+        return;
       }
       
       // Success message
@@ -123,8 +116,12 @@ export default function LoginPage() {
   };
 
   const handleFacebookSignIn = () => {
-    // Facebook sign-in logic will be added later
-    console.log("Facebook sign in");
+    // Facebook Login - henüz implement edilmedi
+    setAlertState({
+      open: true,
+      message: "Facebook ile giriş henüz aktif değil. Email veya Google ile giriş yapın.",
+      severity: "info"
+    });
   };
 
   return (

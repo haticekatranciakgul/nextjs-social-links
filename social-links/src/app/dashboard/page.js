@@ -43,7 +43,13 @@ export default function Dashboard() {
   });
 
   // Link Forms State - Array of link objects  
-  const [linkForms, setLinkForms] = useState([]);
+  const [linkForms, setLinkForms] = useState([{
+    id: Date.now(),
+    title: "",
+    subtitle: "",
+    url: "",
+    icon: "link"
+  }]);
   // Existing Links State
   const [existingLinks, setExistingLinks] = useState([]);
 
@@ -969,7 +975,7 @@ export default function Dashboard() {
             <Button
               variant="contained"
               onClick={saveAllLinks}
-              disabled={loading || linkForms.filter(form => form.title && form.url).length === 0}
+              disabled={loading}
               sx={{
                 background: 'linear-gradient(50deg, #4f1d94 30%, #40659f 90%)',
                 color: 'white',

@@ -31,18 +31,40 @@ export default function RegisterPage() {
     }
   });
 
+  const checkUsernameAvailability = async (username) => {
+    try {
+      const usernameDoc = await getDoc(doc(db, "usernames", username.toLowerCase()));
+      return !usernameDoc.exists();
+    } catch (error) {
+      console.error("Error checking username:", error);
+      return false;
+    }
+  };
+
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      // Username kontrolü
+      const isUsernameAvailable = await checkUsernameAvailability(data.username);
+      if (!isUsernameAvailable) {
+        setAlertState({
+          open: true,
+          message: `"${data.username}" kullanıcı adı zaten alınmış. Lütfen farklı bir kullanıcı adı deneyin.`,
+          severity: "error"
+        });
+        setLoading(false);
+        return;
+      }
+
       const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
       await setDoc(doc(db, "users", user.uid), {
         email: data.email,
-        username: data.username,
+        username: data.username.toLowerCase(), // Küçük harfe çevir
         createdAt: new Date(),
       });
 
-      await setDoc(doc(db, "usernames", data.username), {
+      await setDoc(doc(db, "usernames", data.username.toLowerCase()), { // Küçük harfe çevir
         uid: user.uid,
       });
 
@@ -94,16 +116,29 @@ export default function RegisterPage() {
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
+        // Username kontrolü Google için
+        const isUsernameAvailable = await checkUsernameAvailability(username);
+        if (!isUsernameAvailable) {
+          // Username alınmış ise rastgele numara ekle
+          let counter = 1;
+          let newUsername = `${username}${counter}`;
+          while (!(await checkUsernameAvailability(newUsername))) {
+            counter++;
+            newUsername = `${username}${counter}`;
+          }
+          username = newUsername;
+        }
+        
         await setDoc(userDocRef, {
           email: user.email,
-          username: username,
+          username: username.toLowerCase(), // Küçük harfe çevir
           displayName: user.displayName,
           photoURL: user.photoURL,
           createdAt: new Date(),
           provider: 'google'
         });
         
-        await setDoc(doc(db, "usernames", username), {
+        await setDoc(doc(db, "usernames", username.toLowerCase()), { // Küçük harfe çevir
           uid: user.uid,
         });
       }
@@ -177,7 +212,7 @@ export default function RegisterPage() {
               },
               pattern: { 
                 value: /^[a-z0-9_]+$/, 
-                message: "Username can only contain lowercase letters, numbers and underscores" 
+                message: "Kullanıcı adı sadece küçük harf, rakam ve _ içerebilir (Türkçe karakter kullanmayın)" 
               }
             }}
             render={({ field }) => (
