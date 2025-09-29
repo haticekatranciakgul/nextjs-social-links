@@ -65,7 +65,7 @@ export default function Dashboard() {
   // Loading States
   const [loading, setLoading] = useState(false);
 
-  // Auth kontrolü
+  // Auth control
   useEffect(() => {
     console.log("Dashboard auth check:", {
       user: user?.email || 'No user',
@@ -77,20 +77,20 @@ export default function Dashboard() {
     if (!authLoading) {
       if (!user) {
         console.log("🚨 No user found - redirecting to login");
-        router.replace("/login"); // replace kullan (back button sorununu önler)
+        router.replace("/login"); // use replace (prevents back button issues)
       } else {
         console.log("✅ User authenticated:", user.email);
       }
     }
   }, [user, authLoading, router]);
 
-  // User profile verilerini çek
+  // Fetch user profile data
   useEffect(() => {
     if (!user?.uid) return;
 
     const fetchData = async () => {
       try {
-        // Profile bilgilerini çek
+        // Fetch profile information
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
@@ -106,7 +106,7 @@ export default function Dashboard() {
           });
         }
 
-        // Mevcut linkleri çek
+        // Fetch existing links
         const linksSnapshot = await getDocs(collection(db, "users", user.uid, "links"));
         const linksData = linksSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -134,7 +134,7 @@ export default function Dashboard() {
     try {
       let updatedData = { ...profileData };
       
-      // Eğer yeni foto seçilmişse upload et
+      // If new photo is selected, upload it
       if (photoFile) {
         console.log("📸 Photo file detected, starting upload...");
         const photoURL = await uploadProfilePhoto();
@@ -144,7 +144,7 @@ export default function Dashboard() {
           setProfileData(prev => ({ ...prev, photoURL }));
         } else {
           console.log("❌ Photo upload failed");
-          alert("Fotoğraf yüklenemedi, diğer bilgiler kaydediliyor...");
+          alert("Photo could not be uploaded, saving other information...");
         }
       }
 
@@ -175,13 +175,13 @@ export default function Dashboard() {
   const handlePhotoSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // File type ve size kontrolü
+      // File type and size control
       if (!file.type.startsWith('image/')) {
-        alert('Lütfen bir resim dosyası seçin.');
+        alert('Please select an image file.');
         return;
       }
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('Dosya boyutu 5MB\'dan küçük olmalıdır.');
+        alert('File size must be smaller than 5MB.');
         return;
       }
       setPhotoFile(file);
@@ -199,15 +199,15 @@ export default function Dashboard() {
 
     setPhotoUploading(true);
     try {
-      // Base64'e çevir
+      // Convert to Base64
       const base64 = await convertToBase64(photoFile);
       console.log("✅ File converted to Base64");
       
-      setPhotoFile(null); // File'ı temizle
+      setPhotoFile(null); // Clear file
       return base64;
     } catch (error) {
       console.error("❌ Error converting photo:", error);
-      alert(`Fotoğraf işlenirken hata oluştu: ${error.message}`);
+      alert(`Error processing photo: ${error.message}`);
       return null;
     } finally {
       setPhotoUploading(false);
@@ -437,7 +437,7 @@ export default function Dashboard() {
               onClick={() => {
                 const url = `${window.location.origin}/${profileData.username}`;
                 navigator.clipboard.writeText(url);
-                alert("Link kopyalandı!");
+                alert("Link copied!");
               }}
             >
               <Typography variant="body1" sx={{ color: "white", fontFamily: "monospace" }}>
@@ -456,7 +456,7 @@ export default function Dashboard() {
               }}
               onClick={() => window.open(`${window.location.origin}/${profileData.username}`, '_blank')}
             >
-              Profili Görüntüle
+              View Profile
             </Button>
           </Box>
         )}
@@ -477,9 +477,7 @@ export default function Dashboard() {
           borderRadius: '12px',
           backgroundColor: 'rgba(255, 255, 255, 0.05)'
         }}>
-          <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
-            Profile Fotoğrafı
-          </Typography>
+         
           
           <Box sx={{ position: 'relative', mb: 2 }}>
             <Avatar
@@ -542,14 +540,14 @@ export default function Dashboard() {
                 }
               }}
             >
-              {photoFile ? 'Fotoğraf Değiştir' : 'Fotoğraf Seç'}
+              {photoFile ? 'Change Photo' : 'Select Photo'}
             </Button>
           </label>
           
           {photoFile && (
             <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', mt: 1, textAlign: 'center' }}>
-              Seçilen: {photoFile.name}<br />
-              &quot;Save Profile&quot; butonuna basarak kaydedin
+              Selected: {photoFile.name}<br />
+              Click &quot;Save Profile&quot; button to save
             </Typography>
           )}
         </Box>

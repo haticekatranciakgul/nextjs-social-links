@@ -34,7 +34,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       
-      // Başarılı giriş mesajı
+      // Successful login message
       setAlertState({
         open: true,
         message: "Login successful! Redirecting to dashboard...",
@@ -47,7 +47,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Login error:", error);
       
-      // Firebase hata kodlarına göre özel mesajlar
+      // Special messages based on Firebase error codes
       let errorMessage = error.message;
       
       if (error.code === "auth/invalid-credential") {
@@ -77,19 +77,19 @@ export default function LoginPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
-      // Kullanıcı bilgilerini al
+      // Get user information
       const user = result.user;
       const username = user.displayName?.toLowerCase().replace(/\s+/g, '') || user.email?.split('@')[0];
       
-      // Firestore'da kullanıcı var mı kontrol et
+      // Check if user exists in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
-        // ❌ Kullanıcı kayıtlı değil
+        // ❌ User is not registered
         setAlertState({
           open: true,
-          message: "Bu Google hesabı ile kayıt yapılmamış. Lütfen önce kayıt olunuz.",
+          message: "This Google account is not registered. Please register first.",
           severity: "error"
         });
         return;

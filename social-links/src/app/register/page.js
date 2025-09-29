@@ -44,12 +44,12 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // Username kontrolü
+            // Username check
       const isUsernameAvailable = await checkUsernameAvailability(data.username);
       if (!isUsernameAvailable) {
         setAlertState({
           open: true,
-          message: `"${data.username}" kullanıcı adı zaten alınmış. Lütfen farklı bir kullanıcı adı deneyin.`,
+          message: `"${data.username}" username is already taken. Please try a different username.`,
           severity: "error"
         });
         setLoading(false);
@@ -60,11 +60,11 @@ export default function RegisterPage() {
 
       await setDoc(doc(db, "users", user.uid), {
         email: data.email,
-        username: data.username.toLowerCase(), // Küçük harfe çevir
+        username: data.username.toLowerCase(), // Convert to lowercase
         createdAt: new Date(),
       });
 
-      await setDoc(doc(db, "usernames", data.username.toLowerCase()), { // Küçük harfe çevir
+      await setDoc(doc(db, "usernames", data.username.toLowerCase()), { // Convert to lowercase
         uid: user.uid,
       });
 
@@ -116,7 +116,7 @@ export default function RegisterPage() {
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
-        // Username kontrolü Google için
+        // Username check for Google
         const isUsernameAvailable = await checkUsernameAvailability(username);
         if (!isUsernameAvailable) {
           // Username alınmış ise rastgele numara ekle
