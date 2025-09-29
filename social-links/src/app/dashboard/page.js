@@ -27,6 +27,12 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import MovieIcon from "@mui/icons-material/Movie";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import TelegramIcon from "@mui/icons-material/Telegram";
 import DashboardLayout from "../../components/DashboardLayout";
 import { db } from "../../lib/firebase";
 import { doc, updateDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
@@ -43,6 +49,14 @@ export default function Dashboard() {
     instagram: "",
     github: "",
     linkedin: "",
+    email: "",
+    mobile: "",
+    facebook: "",
+    discord: "",
+    tiktok: "",
+    youtube: "",
+    whatsapp: "",
+    telegram: "",
     username: "",
     photoURL: ""
   });
@@ -123,6 +137,14 @@ export default function Dashboard() {
             instagram: data.instagram || "",
             github: data.github || "",
             linkedin: data.linkedin || "",
+            email: data.email || "",
+            mobile: data.mobile || "",
+            facebook: data.facebook || "",
+            discord: data.discord || "",
+            tiktok: data.tiktok || "",
+            youtube: data.youtube || "",
+            whatsapp: data.whatsapp || "",
+            telegram: data.telegram || "",
             username: data.username || "",
             photoURL: currentPhotoURL
           });
@@ -352,6 +374,13 @@ export default function Dashboard() {
       linkedin: LinkedInIcon,
       youtube: YouTubeIcon,
       twitter: TwitterIcon,
+      email: EmailIcon,
+      mobile: PhoneIcon,
+      facebook: FacebookIcon,
+      discord: MovieIcon,
+      tiktok: MovieIcon,
+      whatsapp: WhatsAppIcon,
+      telegram: TelegramIcon,
       link: LinkIcon
     };
     return icons[iconType] || LinkIcon;
@@ -770,6 +799,230 @@ export default function Dashboard() {
               '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
             }}
           />
+
+          <TextField
+            fullWidth
+            label="E-mail"
+            value={profileData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            variant="outlined"
+            placeholder="your.email@example.com"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <EmailIcon sx={{ color: '#EA4335' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Mobile"
+            value={profileData.mobile}
+            onChange={(e) => handleInputChange('mobile', e.target.value)}
+            variant="outlined"
+            placeholder="+1 (555) 123-4567"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PhoneIcon sx={{ color: '#4CAF50' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Facebook"
+            value={profileData.facebook}
+            onChange={(e) => handleInputChange('facebook', e.target.value)}
+            variant="outlined"
+            placeholder="https://facebook.com/username"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FacebookIcon sx={{ color: '#1877F2' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Discord"
+            value={profileData.discord}
+            onChange={(e) => handleInputChange('discord', e.target.value)}
+            variant="outlined"
+            placeholder="username#1234 or discord.gg/invite"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MovieIcon sx={{ color: '#5865F2' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="TikTok"
+            value={profileData.tiktok}
+            onChange={(e) => handleInputChange('tiktok', e.target.value)}
+            variant="outlined"
+            placeholder="https://tiktok.com/@username"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MovieIcon sx={{ color: '#000000' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="YouTube"
+            value={profileData.youtube}
+            onChange={(e) => handleInputChange('youtube', e.target.value)}
+            variant="outlined"
+            placeholder="https://youtube.com/@channel"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <YouTubeIcon sx={{ color: '#FF0000' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="WhatsApp"
+            value={profileData.whatsapp}
+            onChange={(e) => handleInputChange('whatsapp', e.target.value)}
+            variant="outlined"
+            placeholder="+1 (555) 123-4567"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <WhatsAppIcon sx={{ color: '#25D366' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Telegram"
+            value={profileData.telegram}
+            onChange={(e) => handleInputChange('telegram', e.target.value)}
+            variant="outlined"
+            placeholder="https://t.me/username"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <TelegramIcon sx={{ color: '#0088CC' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+            }}
+          />
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -958,6 +1211,48 @@ export default function Dashboard() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <TwitterIcon fontSize="small" />
                       Twitter
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="email">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <EmailIcon fontSize="small" />
+                      E-mail
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="mobile">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PhoneIcon fontSize="small" />
+                      Mobile
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="facebook">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <FacebookIcon fontSize="small" />
+                      Facebook
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="discord">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <MovieIcon fontSize="small" />
+                      Discord
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="tiktok">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <MovieIcon fontSize="small" />
+                      TikTok
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="whatsapp">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <WhatsAppIcon fontSize="small" />
+                      WhatsApp
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="telegram">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TelegramIcon fontSize="small" />
+                      Telegram
                     </Box>
                   </MenuItem>
                 </Select>
@@ -1151,6 +1446,48 @@ export default function Dashboard() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <TwitterIcon fontSize="small" />
                       Twitter
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="email">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <EmailIcon fontSize="small" />
+                      E-mail
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="mobile">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PhoneIcon fontSize="small" />
+                      Mobile
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="facebook">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <FacebookIcon fontSize="small" />
+                      Facebook
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="discord">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <MovieIcon fontSize="small" />
+                      Discord
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="tiktok">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <MovieIcon fontSize="small" />
+                      TikTok
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="whatsapp">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <WhatsAppIcon fontSize="small" />
+                      WhatsApp
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="telegram">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TelegramIcon fontSize="small" />
+                      Telegram
                     </Box>
                   </MenuItem>
                 </Select>

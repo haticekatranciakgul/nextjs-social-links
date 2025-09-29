@@ -15,6 +15,12 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkIcon from "@mui/icons-material/Link";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import MovieIcon from "@mui/icons-material/Movie";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import TelegramIcon from "@mui/icons-material/Telegram";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, doc, getDoc, query, where, limit } from "firebase/firestore";
 
@@ -80,6 +86,13 @@ export default function PublicProfilePage() {
       linkedin: LinkedInIcon,
       youtube: YouTubeIcon,
       twitter: TwitterIcon,
+      email: EmailIcon,
+      mobile: PhoneIcon,
+      facebook: FacebookIcon,
+      discord: MovieIcon,
+      tiktok: MovieIcon,
+      whatsapp: WhatsAppIcon,
+      telegram: TelegramIcon,
       link: LinkIcon
     };
     return icons[iconType] || LinkIcon;
@@ -211,7 +224,7 @@ export default function PublicProfilePage() {
           )}
 
           {/* Social Links */}
-          {(profileData.instagram || profileData.github || profileData.linkedin) && (
+          {(profileData.instagram || profileData.github || profileData.linkedin || profileData.email || profileData.mobile || profileData.facebook || profileData.discord || profileData.tiktok || profileData.youtube || profileData.whatsapp || profileData.telegram) && (
             <Box sx={{ mb: 4, display: "flex", justifyContent: "center", gap: 2 }}>
               {profileData.instagram && (
                 <Button
@@ -253,6 +266,118 @@ export default function PublicProfilePage() {
                   }}
                 >
                   <LinkedInIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.email && (
+                <Button
+                  onClick={() => handleLinkClick(`mailto:${profileData.email}`)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <EmailIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.mobile && (
+                <Button
+                  onClick={() => handleLinkClick(`tel:${profileData.mobile}`)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <PhoneIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.facebook && (
+                <Button
+                  onClick={() => handleLinkClick(profileData.facebook)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <FacebookIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.discord && (
+                <Button
+                  onClick={() => handleLinkClick(profileData.discord)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <MovieIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.tiktok && (
+                <Button
+                  onClick={() => handleLinkClick(profileData.tiktok)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <MovieIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.youtube && (
+                <Button
+                  onClick={() => handleLinkClick(profileData.youtube)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <YouTubeIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.whatsapp && (
+                <Button
+                  onClick={() => handleLinkClick(`https://wa.me/${profileData.whatsapp.replace(/[^0-9]/g, '')}`)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <WhatsAppIcon sx={{ color: "white" }} />
+                </Button>
+              )}
+              {profileData.telegram && (
+                <Button
+                  onClick={() => handleLinkClick(profileData.telegram)}
+                  sx={{
+                    minWidth: "auto",
+                    p: 1,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                  }}
+                >
+                  <TelegramIcon sx={{ color: "white" }} />
                 </Button>
               )}
             </Box>
