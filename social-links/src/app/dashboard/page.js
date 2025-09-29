@@ -94,6 +94,28 @@ export default function Dashboard() {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
+          
+          // Google ile giriş yapan kullanıcılar için photo sync
+          let currentPhotoURL = data.photoURL || "";
+          if (data.provider === 'google' && user.photoURL && !data.photoURL) {
+            // Google kullanıcısı ve database'de foto yok ama Google'da var
+            currentPhotoURL = user.photoURL;
+            
+            // Otomatik olarak database'e de kaydet
+            try {
+              await updateDoc(doc(db, "users", user.uid), {
+                photoURL: user.photoURL,
+                updatedAt: new Date()
+              });
+              console.log("✅ Google profile photo synced automatically");
+            } catch (error) {
+              console.error("❌ Error syncing Google photo:", error);
+            }
+          } else if (user.photoURL && !currentPhotoURL) {
+            // Herhangi bir kullanıcı, database'de foto yok ama auth'da var
+            currentPhotoURL = user.photoURL;
+          }
+          
           setProfileData({
             displayName: data.displayName || "",
             location: data.location || "",
@@ -102,7 +124,7 @@ export default function Dashboard() {
             github: data.github || "",
             linkedin: data.linkedin || "",
             username: data.username || "",
-            photoURL: data.photoURL || user.photoURL || ""
+            photoURL: currentPhotoURL
           });
         }
 
@@ -477,7 +499,24 @@ export default function Dashboard() {
           borderRadius: '12px',
           backgroundColor: 'rgba(255, 255, 255, 0.05)'
         }}>
-         
+          <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
+            Profile Photo
+          </Typography>
+          
+          {/* Google Account Info */}
+          {user?.photoURL && profileData.photoURL === user.photoURL && (
+            <Typography variant="caption" sx={{ 
+              color: 'rgba(255, 255, 255, 0.7)', 
+              mb: 2, 
+              textAlign: 'center',
+              backgroundColor: 'rgba(66, 165, 245, 0.2)',
+              padding: '4px 8px',
+              borderRadius: '12px',
+              fontSize: '0.75rem'
+            }}>
+              🔗 Using your Google profile photo
+            </Typography>
+          )}
           
           <Box sx={{ position: 'relative', mb: 2 }}>
             <Avatar

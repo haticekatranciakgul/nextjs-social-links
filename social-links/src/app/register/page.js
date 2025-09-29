@@ -62,6 +62,7 @@ export default function RegisterPage() {
         email: data.email,
         username: data.username.toLowerCase(), // Convert to lowercase
         createdAt: new Date(),
+        provider: 'email'
       });
 
       await setDoc(doc(db, "usernames", data.username.toLowerCase()), { // Convert to lowercase
