@@ -175,6 +175,7 @@ export default function PublicProfilePage() {
         >
           {/* Profile Header */}
           <Avatar
+            src={profileData.photoURL}
             sx={{
               width: 120,
               height: 120,
@@ -182,10 +183,11 @@ export default function PublicProfilePage() {
               mb: 2,
               backgroundColor: "rgba(255, 255, 255, 0.2)",
               fontSize: "3rem",
-              color: "white"
+              color: "white",
+              border: "3px solid rgba(255, 255, 255, 0.3)"
             }}
           >
-            {profileData.displayName ? profileData.displayName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase()}
+            {!profileData.photoURL && (profileData.displayName ? profileData.displayName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase())}
           </Avatar>
 
           <Typography variant="h4" sx={{ color: "white", fontWeight: "bold", mb: 1 }}>

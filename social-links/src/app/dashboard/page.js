@@ -13,7 +13,9 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Avatar,
+  CircularProgress
 } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -23,6 +25,8 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkIcon from "@mui/icons-material/Link";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import PersonIcon from "@mui/icons-material/Person";
 import DashboardLayout from "../../components/DashboardLayout";
 import { db } from "../../lib/firebase";
 import { doc, updateDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
@@ -39,8 +43,13 @@ export default function Dashboard() {
     instagram: "",
     github: "",
     linkedin: "",
-    username: ""
+    username: "",
+    photoURL: ""
   });
+
+  // Profile photo upload state
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   // Link Forms State - Array of link objects  
   const [linkForms, setLinkForms] = useState([{
@@ -92,7 +101,8 @@ export default function Dashboard() {
             instagram: data.instagram || "",
             github: data.github || "",
             linkedin: data.linkedin || "",
-            username: data.username || ""
+            username: data.username || "",
+            photoURL: data.photoURL || user.photoURL || ""
           });
         }
 
@@ -115,18 +125,42 @@ export default function Dashboard() {
   const handleProfileSave = async () => {
     if (!user?.uid) return;
 
+    console.log("🔄 Starting profile save...", {
+      hasPhotoFile: !!photoFile,
+      profileData
+    });
+
     setLoading(true);
     try {
+      let updatedData = { ...profileData };
+      
+      // Eğer yeni foto seçilmişse upload et
+      if (photoFile) {
+        console.log("📸 Photo file detected, starting upload...");
+        const photoURL = await uploadProfilePhoto();
+        if (photoURL) {
+          console.log("✅ Photo uploaded, URL:", photoURL);
+          updatedData.photoURL = photoURL;
+          setProfileData(prev => ({ ...prev, photoURL }));
+        } else {
+          console.log("❌ Photo upload failed");
+          alert("Fotoğraf yüklenemedi, diğer bilgiler kaydediliyor...");
+        }
+      }
+
+      console.log("💾 Saving to Firestore...", updatedData);
       await updateDoc(doc(db, "users", user.uid), {
-        ...profileData,
+        ...updatedData,
         updatedAt: new Date()
       });
+      console.log("✅ Profile saved successfully");
       alert("Profile updated successfully!");
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Error updating profile");
+      console.error("❌ Error updating profile:", error);
+      alert(`Error updating profile: ${error.message}`);
     } finally {
       setLoading(false);
+      console.log("🏁 Profile save process finished");
     }
   };
 
@@ -135,6 +169,59 @@ export default function Dashboard() {
       ...prev,
       [field]: value
     }));
+  };
+
+  // Profile photo upload
+  const handlePhotoSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // File type ve size kontrolü
+      if (!file.type.startsWith('image/')) {
+        alert('Lütfen bir resim dosyası seçin.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert('Dosya boyutu 5MB\'dan küçük olmalıdır.');
+        return;
+      }
+      setPhotoFile(file);
+    }
+  };
+
+  const uploadProfilePhoto = async () => {
+    if (!photoFile || !user?.uid) return null;
+
+    console.log("🔄 Starting photo upload (Base64 method)...", {
+      fileName: photoFile.name,
+      fileSize: photoFile.size,
+      fileType: photoFile.type
+    });
+
+    setPhotoUploading(true);
+    try {
+      // Base64'e çevir
+      const base64 = await convertToBase64(photoFile);
+      console.log("✅ File converted to Base64");
+      
+      setPhotoFile(null); // File'ı temizle
+      return base64;
+    } catch (error) {
+      console.error("❌ Error converting photo:", error);
+      alert(`Fotoğraf işlenirken hata oluştu: ${error.message}`);
+      return null;
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  // Base64 converter helper
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   // Add new link form
@@ -331,10 +418,10 @@ export default function Dashboard() {
             }}
           >
             <Typography variant="h6" sx={{ color: "white", fontWeight: "bold", mb: 1 }}>
-              🌐 Public Profiliniz
+              🌐 Public Profile
             </Typography>
             <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 2 }}>
-              Herkese açık profil linkiniz:
+              Share profile link :
             </Typography>
             <Box
               sx={{
@@ -378,6 +465,94 @@ export default function Dashboard() {
         <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
           Profile Information
         </Typography>
+
+        {/* Profile Photo Section */}
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          mb: 4,
+          p: 3,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)'
+        }}>
+          <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+            Profile Fotoğrafı
+          </Typography>
+          
+          <Box sx={{ position: 'relative', mb: 2 }}>
+            <Avatar
+              sx={{
+                width: 120,
+                height: 120,
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: '3px solid #8b5cf6',
+                fontSize: '3rem'
+              }}
+              src={photoFile ? URL.createObjectURL(photoFile) : profileData.photoURL}
+            >
+              {!photoFile && !profileData.photoURL && (
+                profileData.displayName ? 
+                profileData.displayName.charAt(0).toUpperCase() : 
+                <PersonIcon sx={{ fontSize: '3rem' }} />
+              )}
+            </Avatar>
+            
+            {photoUploading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  borderRadius: '50%'
+                }}
+              >
+                <CircularProgress size={40} sx={{ color: '#8b5cf6' }} />
+              </Box>
+            )}
+          </Box>
+
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="profile-photo-upload"
+            type="file"
+            onChange={handlePhotoSelect}
+          />
+          <label htmlFor="profile-photo-upload">
+            <Button
+              variant="outlined"
+              component="span"
+              startIcon={<PhotoCameraIcon />}
+              disabled={photoUploading}
+              sx={{
+                borderColor: 'rgba(139, 92, 246, 0.5)',
+                color: 'white',
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: '#8b5cf6',
+                  backgroundColor: 'rgba(139, 92, 246, 0.1)'
+                }
+              }}
+            >
+              {photoFile ? 'Fotoğraf Değiştir' : 'Fotoğraf Seç'}
+            </Button>
+          </label>
+          
+          {photoFile && (
+            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', mt: 1, textAlign: 'center' }}>
+              Seçilen: {photoFile.name}<br />
+              &quot;Save Profile&quot; butonuna basarak kaydedin
+            </Typography>
+          )}
+        </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
           <TextField
