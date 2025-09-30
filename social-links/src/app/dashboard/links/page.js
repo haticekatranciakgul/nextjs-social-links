@@ -174,22 +174,6 @@ export default function LinksPage() {
 
         {/* Social Media Icons - Yatay */}
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
-          {profileData.github && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.github)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#333',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <GitHubIcon />
-            </IconButton>
-          )}
           {profileData.instagram && (
             <IconButton 
               onClick={() => handleLinkClick(profileData.instagram)}
@@ -204,6 +188,22 @@ export default function LinksPage() {
               }}
             >
               <InstagramIcon />
+            </IconButton>
+          )}
+          {profileData.github && (
+            <IconButton 
+              onClick={() => handleLinkClick(profileData.github)}
+              sx={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                '&:hover': { 
+                  backgroundColor: '#333',
+                  transform: 'scale(1.1)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <GitHubIcon />
             </IconButton>
           )}
           {profileData.linkedin && (
@@ -366,30 +366,30 @@ export default function LinksPage() {
               return (
                 <Button
                   key={link.id}
-                  fullWidth
                   onClick={() => handleLinkClick(link.url)}
-                  startIcon={<IconComponent />}
                   sx={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    color: 'white',
-                    textTransform: 'none',
-                    fontSize: '16px',
-                    padding: '16px 24px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    justifyContent: 'flex-start',
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: "15px",
+                    padding: "12px 20px",
+                    color: "white",
+                    textTransform: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
                     gap: 2,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)',
-                    },
-                    transition: 'all 0.3s ease'
+                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    width: "100%",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.3)",
+                      transform: "translateY(-2px)",
+                      transition: "all 0.2s ease"
+                    }
                   }}
                 >
+                  <IconComponent />
                   <Box sx={{ textAlign: 'left', flex: 1 }}>
-                    <Typography variant="body1" fontWeight="600">
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
                       {link.title}
                     </Typography>
                     {link.description && (
@@ -402,6 +402,19 @@ export default function LinksPage() {
               );
             })
           )}
+        </Box>
+
+        {/* Footer */}
+        <Box sx={{ mt: 4, pt: 3, borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "rgba(255, 255, 255, 0.6)",
+              fontSize: "0.875rem"
+            }}
+          >
+            Powered by Social Links
+          </Typography>
         </Box>
 
       </Box>
