@@ -10,7 +10,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import AuthLayout from "../../components/AuthLayout";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { useForm, Controller } from "react-hook-form";
 
 export default function RegisterPage() {
@@ -111,7 +111,22 @@ export default function RegisterPage() {
       const result = await signInWithPopup(auth, provider);
       
       const user = result.user;
-      const username = user.displayName?.toLowerCase().replace(/\s+/g, '') || user.email?.split('@')[0];
+      // Herzaman email@öncesi kullan
+      const username = user.email?.split('@')[0];
+      
+      // Email benzersizlik kontrolü
+      const existingUserQuery = query(collection(db, "users"), where("email", "==", user.email));
+      const existingUserSnapshot = await getDocs(existingUserQuery);
+      
+      if (!existingUserSnapshot.empty) {
+        setAlertState({
+          open: true,
+          message: "This email is already registered. Please use login instead.",
+          severity: "error"
+        });
+        setLoading(false);
+        return;
+      }
       
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);

@@ -352,26 +352,9 @@ export default function LinksPage() {
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
           {links.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 2 }}>
+              <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                 No links added yet
               </Typography>
-              {user && (
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={() => router.push('/dashboard')}
-                  sx={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)',
-                    color: 'white',
-                    '&:hover': {
-                      background: 'rgba(255, 255, 255, 0.3)',
-                    }
-                  }}
-                >
-                  Add Your First Link
-                </Button>
-              )}
             </Box>
           ) : (
             links.map((link) => {

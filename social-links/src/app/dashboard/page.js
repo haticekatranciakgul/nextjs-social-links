@@ -35,7 +35,7 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import DashboardLayout from "../../components/DashboardLayout";
 import { db } from "../../lib/firebase";
-import { doc, updateDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -130,6 +130,45 @@ export default function Dashboard() {
             currentPhotoURL = user.photoURL;
           }
           
+          // Username yoksa otomatik oluştur
+          let finalUsername = data.username || "";
+          if (!finalUsername && user.email) {
+            // Herzaman email@öncesi kullan
+            const baseUsername = user.email.split('@')[0];
+            
+            // Username müsaitlik kontrolü
+            const checkUsernameAvailability = async (username) => {
+              const usernameDoc = await getDoc(doc(db, "usernames", username));
+              return !usernameDoc.exists();
+            };
+            
+            let autoUsername = baseUsername;
+            let counter = 1;
+            
+            // Müsait username bul
+            while (!(await checkUsernameAvailability(autoUsername))) {
+              autoUsername = `${baseUsername}${counter}`;
+              counter++;
+            }
+            
+            // Username'i kaydet
+            try {
+              await updateDoc(doc(db, "users", user.uid), {
+                username: autoUsername,
+                updatedAt: new Date()
+              });
+              
+              await setDoc(doc(db, "usernames", autoUsername), {
+                uid: user.uid
+              });
+              
+              finalUsername = autoUsername;
+              console.log("✅ Auto-generated username:", autoUsername);
+            } catch (error) {
+              console.error("❌ Error creating auto username:", error);
+            }
+          }
+
           setProfileData({
             displayName: data.displayName || "",
             location: data.location || "",
@@ -145,7 +184,7 @@ export default function Dashboard() {
             youtube: data.youtube || "",
             whatsapp: data.whatsapp || "",
             telegram: data.telegram || "",
-            username: data.username || "",
+            username: finalUsername,
             photoURL: currentPhotoURL
           });
         }

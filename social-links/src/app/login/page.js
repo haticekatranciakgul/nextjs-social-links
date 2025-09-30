@@ -32,7 +32,22 @@ export default function LoginPage() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+      
+      // Kullanıcının database'de kayıtlı olup olmadığını kontrol et
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        // Kullanıcı auth'da var ama users collection'ında yok
+        await auth.signOut(); // Çıkış yap
+        setAlertState({
+          open: true,
+          message: "This account is not registered in our system. Please register first.",
+          severity: "error"
+        });
+        setLoading(false);
+        return;
+      }
       
       // Successful login message
       setAlertState({
