@@ -412,9 +412,16 @@ export default function PublicProfilePage() {
                     }}
                   >
                     <IconComponent />
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {link.title}
-                    </Typography>
+                    <Box sx={{ textAlign: 'left', flex: 1 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {link.title}
+                      </Typography>
+                      {link.description && (
+                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          {link.description}
+                        </Typography>
+                      )}
+                    </Box>
                   </Button>
                 );
               })
