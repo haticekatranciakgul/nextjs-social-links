@@ -33,7 +33,9 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import MovieIcon from "@mui/icons-material/Movie";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import TelegramIcon from "@mui/icons-material/Telegram";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import DashboardLayout from "../../components/DashboardLayout";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { db } from "../../lib/firebase";
 import { doc, updateDoc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 
@@ -64,6 +66,91 @@ export default function Dashboard() {
   // Profile photo upload state
   const [photoFile, setPhotoFile] = useState(null);
   const [photoUploading, setPhotoUploading] = useState(false);
+
+  // Contacts order state for drag & drop
+  const [contactsOrder, setContactsOrder] = useState([
+    'instagram',
+    'github', 
+    'linkedin',
+    'email',
+    'mobile',
+    'facebook',
+    'discord',
+    'tiktok',
+    'youtube',
+    'whatsapp',
+    'telegram'
+  ]);
+
+  // Contacts configuration
+  const contactsConfig = {
+    instagram: {
+      label: "Instagram",
+      placeholder: "https://instagram.com/username",
+      icon: <InstagramIcon sx={{ color: '#E1306C' }} />,
+      color: '#E1306C'
+    },
+    github: {
+      label: "GitHub", 
+      placeholder: "https://github.com/username",
+      icon: <GitHubIcon sx={{ color: '#333' }} />,
+      color: '#333'
+    },
+    linkedin: {
+      label: "LinkedIn",
+      placeholder: "https://linkedin.com/in/username",
+      icon: <LinkedInIcon sx={{ color: '#0077B5' }} />,
+      color: '#0077B5'
+    },
+    email: {
+      label: "E-mail",
+      placeholder: "your.email@example.com",
+      icon: <EmailIcon sx={{ color: '#EA4335' }} />,
+      color: '#EA4335'
+    },
+    mobile: {
+      label: "Mobile",
+      placeholder: "+1 (555) 123-4567",
+      icon: <PhoneIcon sx={{ color: '#4CAF50' }} />,
+      color: '#4CAF50'
+    },
+    facebook: {
+      label: "Facebook",
+      placeholder: "https://facebook.com/username",
+      icon: <FacebookIcon sx={{ color: '#1877F2' }} />,
+      color: '#1877F2'
+    },
+    discord: {
+      label: "Discord",
+      placeholder: "username#1234 or discord.gg/invite",
+      icon: <MovieIcon sx={{ color: '#5865F2' }} />,
+      color: '#5865F2'
+    },
+    tiktok: {
+      label: "TikTok", 
+      placeholder: "https://tiktok.com/@username",
+      icon: <MovieIcon sx={{ color: '#000000' }} />,
+      color: '#000000'
+    },
+    youtube: {
+      label: "YouTube",
+      placeholder: "https://youtube.com/@channel",
+      icon: <YouTubeIcon sx={{ color: '#FF0000' }} />,
+      color: '#FF0000'
+    },
+    whatsapp: {
+      label: "WhatsApp",
+      placeholder: "+1 (555) 123-4567",
+      icon: <WhatsAppIcon sx={{ color: '#25D366' }} />,
+      color: '#25D366'
+    },
+    telegram: {
+      label: "Telegram",
+      placeholder: "https://t.me/username", 
+      icon: <TelegramIcon sx={{ color: '#0088CC' }} />,
+      color: '#0088CC'
+    }
+  };
 
   // Link Forms State - Array of link objects  
   const [linkForms, setLinkForms] = useState([{
@@ -249,9 +336,20 @@ export default function Dashboard() {
 
   const handleInputChange = (field, value) => {
     setProfileData(prev => ({
-      ...prev,
+      ...prev,  
       [field]: value
     }));
+  };
+
+  // Drag & Drop handler for contacts
+  const handleContactsDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const items = Array.from(contactsOrder);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setContactsOrder(items);
   };
 
   // Profile photo upload
@@ -763,315 +861,108 @@ export default function Dashboard() {
           Contacts
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
-          <TextField
-            fullWidth
-            label="Instagram"
-            value={profileData.instagram}
-            onChange={(e) => handleInputChange('instagram', e.target.value)}
-            variant="outlined"
-            placeholder="https://instagram.com/username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <InstagramIcon sx={{ color: '#E1306C' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
 
-          <TextField
-            fullWidth
-            label="GitHub"
-            value={profileData.github}
-            onChange={(e) => handleInputChange('github', e.target.value)}
-            variant="outlined"
-            placeholder="https://github.com/username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <GitHubIcon sx={{ color: '#333' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
 
-          <TextField
-            fullWidth
-            label="LinkedIn"
-            value={profileData.linkedin}
-            onChange={(e) => handleInputChange('linkedin', e.target.value)}
-            variant="outlined"
-            placeholder="https://linkedin.com/in/username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkedInIcon sx={{ color: '#0077B5' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="E-mail"
-            value={profileData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            variant="outlined"
-            placeholder="your.email@example.com"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon sx={{ color: '#EA4335' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Mobile"
-            value={profileData.mobile}
-            onChange={(e) => handleInputChange('mobile', e.target.value)}
-            variant="outlined"
-            placeholder="+1 (555) 123-4567"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PhoneIcon sx={{ color: '#4CAF50' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Facebook"
-            value={profileData.facebook}
-            onChange={(e) => handleInputChange('facebook', e.target.value)}
-            variant="outlined"
-            placeholder="https://facebook.com/username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FacebookIcon sx={{ color: '#1877F2' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Discord"
-            value={profileData.discord}
-            onChange={(e) => handleInputChange('discord', e.target.value)}
-            variant="outlined"
-            placeholder="username#1234 or discord.gg/invite"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <MovieIcon sx={{ color: '#5865F2' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="TikTok"
-            value={profileData.tiktok}
-            onChange={(e) => handleInputChange('tiktok', e.target.value)}
-            variant="outlined"
-            placeholder="https://tiktok.com/@username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <MovieIcon sx={{ color: '#000000' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="YouTube"
-            value={profileData.youtube}
-            onChange={(e) => handleInputChange('youtube', e.target.value)}
-            variant="outlined"
-            placeholder="https://youtube.com/@channel"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <YouTubeIcon sx={{ color: '#FF0000' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="WhatsApp"
-            value={profileData.whatsapp}
-            onChange={(e) => handleInputChange('whatsapp', e.target.value)}
-            variant="outlined"
-            placeholder="+1 (555) 123-4567"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <WhatsAppIcon sx={{ color: '#25D366' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Telegram"
-            value={profileData.telegram}
-            onChange={(e) => handleInputChange('telegram', e.target.value)}
-            variant="outlined"
-            placeholder="https://t.me/username"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <TelegramIcon sx={{ color: '#0088CC' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
-              },
-              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
-              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
-            }}
-          />
-        </Box>
+        <DragDropContext onDragEnd={handleContactsDragEnd}>
+          <Droppable droppableId="contacts">
+            {(provided) => (
+              <Box
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}
+              >
+                {contactsOrder.map((contactKey, index) => {
+                  const config = contactsConfig[contactKey];
+                  return (
+                    <Draggable 
+                      key={contactKey} 
+                      draggableId={contactKey} 
+                      index={index}
+                      disableInteractiveElementBlocking={true}
+                    >
+                      {(provided, snapshot) => (
+                        <Box
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            borderRadius: 1,
+                            backgroundColor: snapshot.isDragging ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
+                            border: snapshot.isDragging ? '1px solid rgba(139, 92, 246, 0.3)' : 'none',
+                            padding: snapshot.isDragging ? '4px' : '0',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                            }
+                          }}
+                        >
+                          {/* Drag Handle */}
+                          <Box
+                            {...provided.dragHandleProps}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 24,
+                              height: 24,
+                              borderRadius: '6px',
+                              cursor: 'grab',
+                              color: 'rgba(255, 255, 255, 0.4)',
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                transform: 'scale(1.1)',
+                              },
+                              '&:active': {
+                                cursor: 'grabbing',
+                                transform: 'scale(0.95)',
+                              }
+                            }}
+                          >
+                            <DragIndicatorIcon sx={{ fontSize: 18 }} />
+                          </Box>
+                          
+                          {/* TextField */}
+                          <TextField
+                            fullWidth
+                            label={config.label}
+                            value={profileData[contactKey] || ''}
+                            onChange={(e) => handleInputChange(contactKey, e.target.value)}
+                            variant="outlined"
+                            placeholder={config.placeholder}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  {config.icon}
+                                </InputAdornment>
+                              ),
+                            }}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                color: 'white',
+                                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                                '&.Mui-focused fieldset': { borderColor: '#8b5cf6' },
+                              },
+                              '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                              '& .MuiInputLabel-root.Mui-focused': { color: '#8b5cf6' },
+                              '& .MuiOutlinedInput-input::placeholder': { color: 'rgba(255, 255, 255, 0.5)' },
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {provided.placeholder}
+              </Box>
+            )}
+          </Droppable>
+        </DragDropContext>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button

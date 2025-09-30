@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    // Development overlay'i kapat
-    appDir: true,
-  },
   // Error overlay'i kapat
   compiler: {
     // Remove console.logs in production
@@ -11,8 +7,7 @@ const nextConfig = {
   },
   // Development indicators'ı kapat
   devIndicators: {
-    buildActivity: false,
-    buildActivityPosition: 'top-right',
+    position: 'bottom-left',
   },
   webpack: (config) => {
     config.resolve.alias = {
