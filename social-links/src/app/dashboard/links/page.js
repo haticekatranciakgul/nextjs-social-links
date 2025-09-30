@@ -7,7 +7,8 @@ import {
   Box, 
   Typography, 
   Avatar,
-  IconButton
+  IconButton,
+  Container
 } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -113,60 +114,63 @@ export default function LinksPage() {
   }
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center"
-      style={{
+    <Box
+      sx={{
+        minHeight: "100vh",
         backgroundImage: "url('/background.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        py: 4
       }}
     >
-      <Box 
-        sx={{ 
-          maxWidth: 400,
-          width: '100%',
-          padding: 3,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 3
-        }}
-      >
-        {/* Profile Section */}
-        <Box sx={{ mb: 4 }}>
-          <Avatar
-            src={user?.photoURL || profileData.photoURL}
-            sx={{ 
-              width: 100, 
-              height: 100, 
-              mx: 'auto', 
-              mb: 2,
-              border: '3px solid rgba(255, 255, 255, 0.5)'
-            }}
-          >
-            {(profileData.displayName || user?.displayName)?.[0] || user?.email?.[0] || 'U'}
-          </Avatar>
-          
-          <Typography 
-            variant="h5" 
-            sx={{ color: 'white', fontWeight: 'bold', mb: 1, textAlign: 'center' }}
-          >
-            @{profileData.username || user?.email?.split('@')[0] || 'user'}
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(20px)",
+            borderRadius: "20px",
+            padding: 4,
+            textAlign: "center",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }}
+        >
+        {/* Profile Header - View Profile ile aynı */}
+        <Avatar
+          src={user?.photoURL || profileData.photoURL}
+          sx={{
+            width: 120,
+            height: 120,
+            mx: "auto",
+            mb: 2,
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            fontSize: "3rem",
+            color: "white",
+            border: "3px solid rgba(255, 255, 255, 0.3)"
+          }}
+        >
+          {!profileData.photoURL && (profileData.displayName ? profileData.displayName.charAt(0).toUpperCase() : (profileData.username || user?.email?.split('@')[0] || 'U').charAt(0).toUpperCase())}
+        </Avatar>
+
+        <Typography variant="h4" sx={{ color: "white", fontWeight: "bold", mb: 1 }}>
+          {profileData.displayName || `@${profileData.username || user?.email?.split('@')[0] || 'user'}`}
+        </Typography>
+
+        <Typography variant="h6" sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 1 }}>
+          @{profileData.username || user?.email?.split('@')[0] || 'user'}
+        </Typography>
+
+        {profileData.location && (
+          <Typography variant="body1" sx={{ color: "rgba(255, 255, 255, 0.7)", mb: 2 }}>
+            📍 {profileData.location}
           </Typography>
+        )}
 
-          {profileData.displayName && (
-            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.9)', mb: 1, textAlign: 'center' }}>
-              {profileData.displayName}
-            </Typography>
-          )}
-
-          {profileData.bio && (
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 3, maxWidth: 300, mx: 'auto', textAlign: 'center' }}>
-              {profileData.bio}
-            </Typography>
-          )}
-        </Box>
+        {profileData.bio && (
+          <Typography variant="body1" sx={{ color: "rgba(255, 255, 255, 0.9)", mb: 3 }}>
+            {profileData.bio}
+          </Typography>
+        )}
 
         {/* Social Media Icons - Yatay */}
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
@@ -401,6 +405,7 @@ export default function LinksPage() {
         </Box>
 
       </Box>
-    </div>
+    </Container>
+  </Box>
   );
 }
