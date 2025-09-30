@@ -504,24 +504,32 @@ export default function Dashboard() {
               borderRadius: "12px",
               padding: 3,
               mb: 4,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
               textAlign: "center"
             }}
           >
-            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold", mb: 1 }}>
+            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
               🌐 Public Profile
             </Typography>
-            <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 2 }}>
+            
+            <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
               Share profile link :
             </Typography>
+            
             <Box
               sx={{
                 backgroundColor: "rgba(255, 255, 255, 0.1)",
                 borderRadius: "8px",
-                padding: "8px 16px",
-                display: "inline-flex",
+                padding: "12px 16px",
+                display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: 1,
                 cursor: "pointer",
+                alignSelf: "center",
+                maxWidth: "100%",
                 "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.15)" }
               }}
               onClick={() => {
@@ -535,11 +543,12 @@ export default function Dashboard() {
               </Typography>
               <LinkIcon sx={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "1rem" }} />
             </Box>
+            
             <Button
               variant="outlined"
               size="small"
               sx={{
-                mt: 2,
+                alignSelf: "center",
                 borderColor: "rgba(139, 92, 246, 0.5)",
                 color: "white",
                 "&:hover": { borderColor: "#8b5cf6", backgroundColor: "rgba(139, 92, 246, 0.1)" }
