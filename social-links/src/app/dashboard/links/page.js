@@ -23,6 +23,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import MovieIcon from "@mui/icons-material/Movie";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import TelegramIcon from "@mui/icons-material/Telegram";
+import { SiDiscord, SiTiktok } from "react-icons/si";
 import EditIcon from "@mui/icons-material/Edit";
 import { db } from "../../../lib/firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
@@ -197,8 +198,8 @@ export default function LinksPage() {
                   email: { icon: EmailIcon, color: '#EA4335', url: `mailto:${profileData[key]}`, label: 'Email' },
                   mobile: { icon: PhoneIcon, color: '#4CAF50', url: `tel:${profileData[key]}`, label: 'Mobile' },
                   facebook: { icon: FacebookIcon, color: '#1877F2', url: profileData[key], label: 'Facebook' },
-                  discord: { icon: MovieIcon, color: '#5865F2', url: profileData[key], label: 'Discord' },
-                  tiktok: { icon: MovieIcon, color: '#000000', url: profileData[key], label: 'TikTok' },
+                  discord: { icon: SiDiscord, color: '#5865F2', url: profileData[key], label: 'Discord' },
+                  tiktok: { icon: SiTiktok, color: '#000000', url: profileData[key], label: 'TikTok' },
                   youtube: { icon: YouTubeIcon, color: '#FF0000', url: profileData[key], label: 'YouTube' },
                   whatsapp: { icon: WhatsAppIcon, color: '#25D366', url: `https://wa.me/${profileData[key].replace(/[^0-9]/g, '')}`, label: 'WhatsApp' },
                   telegram: { icon: TelegramIcon, color: '#0088CC', url: profileData[key], label: 'Telegram' },
@@ -225,7 +226,11 @@ export default function LinksPage() {
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    <IconComponent />
+                    {contactKey === 'discord' || contactKey === 'tiktok' ? (
+                      <IconComponent size={24} color="white" />
+                    ) : (
+                      <IconComponent />
+                    )}
                   </IconButton>
                 </Tooltip>
               );

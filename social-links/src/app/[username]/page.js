@@ -22,6 +22,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import MovieIcon from "@mui/icons-material/Movie";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import TelegramIcon from "@mui/icons-material/Telegram";
+import { SiDiscord, SiTiktok } from "react-icons/si";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, doc, getDoc, query, where, limit } from "firebase/firestore";
 
@@ -99,8 +100,8 @@ export default function PublicProfilePage() {
       email: EmailIcon,
       mobile: PhoneIcon,
       facebook: FacebookIcon,
-      discord: MovieIcon,
-      tiktok: MovieIcon,
+      discord: SiDiscord,
+      tiktok: SiTiktok,
       whatsapp: WhatsAppIcon,
       telegram: TelegramIcon,
       link: LinkIcon
@@ -247,8 +248,8 @@ export default function PublicProfilePage() {
                     email: { icon: EmailIcon, label: 'Email', color: '#EA4335' },
                     mobile: { icon: PhoneIcon, label: 'Mobile', color: '#4CAF50' },
                     facebook: { icon: FacebookIcon, label: 'Facebook', color: '#1877F2' },
-                    discord: { icon: MovieIcon, label: 'Discord', color: '#5865F2' },
-                    tiktok: { icon: MovieIcon, label: 'TikTok', color: '#000000' },
+                    discord: { icon: SiDiscord, label: 'Discord', color: '#5865F2' },
+                    tiktok: { icon: SiTiktok, label: 'TikTok', color: '#000000' },
                     youtube: { icon: YouTubeIcon, label: 'YouTube', color: '#FF0000' },
                     whatsapp: { icon: WhatsAppIcon, label: 'WhatsApp', color: '#25D366' },
                     telegram: { icon: TelegramIcon, label: 'Telegram', color: '#0088CC' },
@@ -283,7 +284,11 @@ export default function PublicProfilePage() {
                         transition: "all 0.2s ease"
                       }}
                     >
-                      <IconComponent sx={{ color: "white" }} />
+                      {contactKey === 'discord' || contactKey === 'tiktok' ? (
+                        <IconComponent size={24} color="white" />
+                      ) : (
+                        <IconComponent sx={{ color: "white" }} />
+                      )}
                     </Button>
                   </Tooltip>
                 );

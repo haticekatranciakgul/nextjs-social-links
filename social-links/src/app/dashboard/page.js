@@ -33,6 +33,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import MovieIcon from "@mui/icons-material/Movie";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import TelegramIcon from "@mui/icons-material/Telegram";
+import { SiDiscord, SiTiktok } from "react-icons/si";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import DashboardLayout from "../../components/DashboardLayout";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -123,13 +124,13 @@ export default function Dashboard() {
     discord: {
       label: "Discord",
       placeholder: "username#1234 or discord.gg/invite",
-      icon: <MovieIcon />,
+      icon: <SiDiscord />,
       color: '#5865F2'
     },
     tiktok: {
       label: "TikTok", 
       placeholder: "https://tiktok.com/@username",
-      icon: <MovieIcon />,
+      icon: <SiTiktok />,
       color: '#000000'
     },
     youtube: {
@@ -536,8 +537,8 @@ export default function Dashboard() {
       email: EmailIcon,
       mobile: PhoneIcon,
       facebook: FacebookIcon,
-      discord: MovieIcon,
-      tiktok: MovieIcon,
+      discord: SiDiscord,
+      tiktok: SiTiktok,
       whatsapp: WhatsAppIcon,
       telegram: TelegramIcon,
       link: LinkIcon
