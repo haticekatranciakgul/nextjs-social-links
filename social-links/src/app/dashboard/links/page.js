@@ -33,6 +33,10 @@ export default function LinksPage() {
   const [links, setLinks] = useState([]);
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [contactsOrder, setContactsOrder] = useState([
+    'instagram', 'github', 'linkedin', 'email', 'mobile', 
+    'facebook', 'discord', 'tiktok', 'youtube', 'whatsapp', 'telegram'
+  ]);
 
   // Auth kontrolünü kaldırıyoruz - artık herkese açık
   // useEffect(() => {
@@ -53,7 +57,13 @@ export default function LinksPage() {
       // Profile bilgilerini çek
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
-        setProfileData(userDoc.data());
+        const userData = userDoc.data();
+        setProfileData(userData);
+        
+        // ContactsOrder'ı yükle
+        if (userData.contactsOrder && Array.isArray(userData.contactsOrder)) {
+          setContactsOrder(userData.contactsOrder);
+        }
       }
 
       // Links'leri çek
@@ -172,185 +182,54 @@ export default function LinksPage() {
           </Typography>
         )}
 
-        {/* Social Media Icons - Yatay */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
-          {profileData.instagram && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.instagram)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#E1306C',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <InstagramIcon />
-            </IconButton>
-          )}
-          {profileData.github && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.github)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#333',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <GitHubIcon />
-            </IconButton>
-          )}
-          {profileData.linkedin && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.linkedin)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#0077B5',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <LinkedInIcon />
-            </IconButton>
-          )}
-          {profileData.email && (
-            <IconButton 
-              onClick={() => handleLinkClick(`mailto:${profileData.email}`)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#EA4335',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <EmailIcon />
-            </IconButton>
-          )}
-          {profileData.mobile && (
-            <IconButton 
-              onClick={() => handleLinkClick(`tel:${profileData.mobile}`)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#4CAF50',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <PhoneIcon />
-            </IconButton>
-          )}
-          {profileData.facebook && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.facebook)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#1877F2',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <FacebookIcon />
-            </IconButton>
-          )}
-          {profileData.discord && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.discord)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#5865F2',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <MovieIcon />
-            </IconButton>
-          )}
-          {profileData.tiktok && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.tiktok)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#000000',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <MovieIcon />
-            </IconButton>
-          )}
-          {profileData.youtube && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.youtube)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#FF0000',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <YouTubeIcon />
-            </IconButton>
-          )}
-          {profileData.whatsapp && (
-            <IconButton 
-              onClick={() => handleLinkClick(`https://wa.me/${profileData.whatsapp.replace(/[^0-9]/g, '')}`)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#25D366',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <WhatsAppIcon />
-            </IconButton>
-          )}
-          {profileData.telegram && (
-            <IconButton 
-              onClick={() => handleLinkClick(profileData.telegram)}
-              sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                '&:hover': { 
-                  backgroundColor: '#0088CC',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <TelegramIcon />
-            </IconButton>
-          )}
-        </Box>
+        {/* Social Media Icons - Dynamic order based on contactsOrder */}
+        {contactsOrder.some(key => profileData[key]) && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+            {contactsOrder.map((contactKey) => {
+              if (!profileData[contactKey]) return null;
+              
+              const getContactConfig = (key) => {
+                const configs = {
+                  instagram: { icon: InstagramIcon, color: '#E1306C', url: profileData[key] },
+                  github: { icon: GitHubIcon, color: '#333', url: profileData[key] },
+                  linkedin: { icon: LinkedInIcon, color: '#0077B5', url: profileData[key] },
+                  email: { icon: EmailIcon, color: '#EA4335', url: `mailto:${profileData[key]}` },
+                  mobile: { icon: PhoneIcon, color: '#4CAF50', url: `tel:${profileData[key]}` },
+                  facebook: { icon: FacebookIcon, color: '#1877F2', url: profileData[key] },
+                  discord: { icon: MovieIcon, color: '#5865F2', url: profileData[key] },
+                  tiktok: { icon: MovieIcon, color: '#000000', url: profileData[key] },
+                  youtube: { icon: YouTubeIcon, color: '#FF0000', url: profileData[key] },
+                  whatsapp: { icon: WhatsAppIcon, color: '#25D366', url: `https://wa.me/${profileData[key].replace(/[^0-9]/g, '')}` },
+                  telegram: { icon: TelegramIcon, color: '#0088CC', url: profileData[key] },
+                };
+                return configs[key];
+              };
+
+              const config = getContactConfig(contactKey);
+              if (!config) return null;
+
+              const IconComponent = config.icon;
+
+              return (
+                <IconButton 
+                  key={contactKey}
+                  onClick={() => handleLinkClick(config.url)}
+                  sx={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    '&:hover': { 
+                      backgroundColor: config.color,
+                      transform: 'scale(1.1)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <IconComponent />
+                </IconButton>
+              );
+            })}
+          </Box>
+        )}
 
         {/* Custom Links - Dikey */}
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>

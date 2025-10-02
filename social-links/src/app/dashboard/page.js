@@ -274,6 +274,12 @@ export default function Dashboard() {
             username: finalUsername,
             photoURL: currentPhotoURL
           });
+
+          // Load contacts order if exists
+          if (data.contactsOrder && Array.isArray(data.contactsOrder)) {
+            setContactsOrder(data.contactsOrder);
+            console.log("✅ Loaded contacts order:", data.contactsOrder);
+          }
         }
 
         // Fetch existing links
@@ -342,7 +348,7 @@ export default function Dashboard() {
   };
 
   // Drag & Drop handler for contacts
-  const handleContactsDragEnd = (result) => {
+  const handleContactsDragEnd = async (result) => {
     if (!result.destination) return;
 
     const items = Array.from(contactsOrder);
@@ -350,6 +356,19 @@ export default function Dashboard() {
     items.splice(result.destination.index, 0, reorderedItem);
 
     setContactsOrder(items);
+
+    // Save to Firebase
+    if (user?.uid) {
+      try {
+        await updateDoc(doc(db, "users", user.uid), {
+          contactsOrder: items,
+          updatedAt: new Date()
+        });
+        console.log("✅ Contacts order saved to Firebase:", items);
+      } catch (error) {
+        console.error("❌ Error saving contacts order:", error);
+      }
+    }
   };
 
   // Profile photo upload

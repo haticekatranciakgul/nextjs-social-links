@@ -32,6 +32,10 @@ export default function PublicProfilePage() {
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
   const [userExists, setUserExists] = useState(false);
+  const [contactsOrder, setContactsOrder] = useState([
+    'instagram', 'github', 'linkedin', 'email', 'mobile', 
+    'facebook', 'discord', 'tiktok', 'youtube', 'whatsapp', 'telegram'
+  ]);
 
   useEffect(() => {
     const fetchPublicProfile = async () => {
@@ -50,13 +54,18 @@ export default function PublicProfilePage() {
         const uid = usernameDoc.data().uid;
         setUserExists(true);
 
-        // Kullanıcı profile bilgilerini çek
+        // Kullanıcı profilini çek
         const userDoc = await getDoc(doc(db, "users", uid));
         if (userDoc.exists()) {
-          setProfileData(userDoc.data());
-        }
-
-        // Kullanıcının linklerini çek
+          setUserExists(true);
+          const userData = userDoc.data();
+          setProfileData(userData);
+          
+          // ContactsOrder'ı yükle
+          if (userData.contactsOrder && Array.isArray(userData.contactsOrder)) {
+            setContactsOrder(userData.contactsOrder);
+          }
+        }        // Kullanıcının linklerini çek
         const querySnapshot = await getDocs(collection(db, "users", uid, "links"));
         const linksData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -223,122 +232,59 @@ export default function PublicProfilePage() {
             </Typography>
           )}
 
-          {/* Social Links */}
-          {(profileData.instagram || profileData.github || profileData.linkedin || profileData.email || profileData.mobile || profileData.facebook || profileData.discord || profileData.tiktok || profileData.youtube || profileData.whatsapp || profileData.telegram) && (
-            <Box sx={{ mb: 4, display: "flex", justifyContent: "center", gap: 2 }}>
-              {profileData.instagram && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.instagram)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <InstagramIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.github && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.github)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <GitHubIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.linkedin && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.linkedin)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <LinkedInIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.email && (
-                <Button
-                  onClick={() => handleLinkClick(`mailto:${profileData.email}`)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <EmailIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.mobile && (
-                <Button
-                  onClick={() => handleLinkClick(`tel:${profileData.mobile}`)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <PhoneIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.facebook && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.facebook)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <FacebookIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.discord && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.discord)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <MovieIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.tiktok && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.tiktok)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <MovieIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.youtube && (
+          {/* Social Links - Dynamic order based on contactsOrder */}
+          {contactsOrder.some(key => profileData[key]) && (
+            <Box sx={{ mb: 4, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
+              {contactsOrder.map((contactKey) => {
+                if (!profileData[contactKey]) return null;
+                
+                const getContactIcon = (key) => {
+                  const icons = {
+                    instagram: InstagramIcon,
+                    github: GitHubIcon,
+                    linkedin: LinkedInIcon,
+                    email: EmailIcon,
+                    mobile: PhoneIcon,
+                    facebook: FacebookIcon,
+                    discord: MovieIcon,
+                    tiktok: MovieIcon,
+                    youtube: YouTubeIcon,
+                    whatsapp: WhatsAppIcon,
+                    telegram: TelegramIcon,
+                  };
+                  return icons[key];
+                };
+
+                const getContactUrl = (key, value) => {
+                  if (key === 'email') return `mailto:${value}`;
+                  if (key === 'mobile') return `tel:${value}`;
+                  return value;
+                };
+
+                const IconComponent = getContactIcon(contactKey);
+                if (!IconComponent) return null;
+
+                return (
+                  <Button
+                    key={contactKey}
+                    onClick={() => handleLinkClick(getContactUrl(contactKey, profileData[contactKey]))}
+                    sx={{
+                      minWidth: "auto",
+                      p: 1,
+                      borderRadius: "50%",
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                    }}
+                  >
+                    <IconComponent sx={{ color: "white" }} />
+                  </Button>
+                );
+              })}
+            </Box>
+          )}
+
+          {/* YouTube continuation */}
+          {false && profileData.youtube && (
                 <Button
                   onClick={() => handleLinkClick(profileData.youtube)}
                   sx={{
