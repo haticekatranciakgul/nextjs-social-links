@@ -279,6 +279,8 @@ export default function Dashboard() {
           if (data.contactsOrder && Array.isArray(data.contactsOrder)) {
             setContactsOrder(data.contactsOrder);
             console.log("✅ Loaded contacts order:", data.contactsOrder);
+          } else {
+            console.log("⚠️ No contacts order found, using default");
           }
         }
 
@@ -327,6 +329,7 @@ export default function Dashboard() {
       console.log("💾 Saving to Firestore...", updatedData);
       await updateDoc(doc(db, "users", user.uid), {
         ...updatedData,
+        contactsOrder: contactsOrder, // Save current contacts order
         updatedAt: new Date()
       });
       console.log("✅ Profile saved successfully");

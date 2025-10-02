@@ -283,52 +283,6 @@ export default function PublicProfilePage() {
             </Box>
           )}
 
-          {/* YouTube continuation */}
-          {false && profileData.youtube && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.youtube)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <YouTubeIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.whatsapp && (
-                <Button
-                  onClick={() => handleLinkClick(`https://wa.me/${profileData.whatsapp.replace(/[^0-9]/g, '')}`)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <WhatsAppIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-              {profileData.telegram && (
-                <Button
-                  onClick={() => handleLinkClick(profileData.telegram)}
-                  sx={{
-                    minWidth: "auto",
-                    p: 1,
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                  }}
-                >
-                  <TelegramIcon sx={{ color: "white" }} />
-                </Button>
-              )}
-            </Box>
-          )}
-
           {/* Custom Links */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {links.length > 0 ? (
