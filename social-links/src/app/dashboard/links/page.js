@@ -8,7 +8,8 @@ import {
   Typography, 
   Avatar,
   IconButton,
-  Container
+  Container,
+  Tooltip
 } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -190,17 +191,17 @@ export default function LinksPage() {
               
               const getContactConfig = (key) => {
                 const configs = {
-                  instagram: { icon: InstagramIcon, color: '#E1306C', url: profileData[key] },
-                  github: { icon: GitHubIcon, color: '#333', url: profileData[key] },
-                  linkedin: { icon: LinkedInIcon, color: '#0077B5', url: profileData[key] },
-                  email: { icon: EmailIcon, color: '#EA4335', url: `mailto:${profileData[key]}` },
-                  mobile: { icon: PhoneIcon, color: '#4CAF50', url: `tel:${profileData[key]}` },
-                  facebook: { icon: FacebookIcon, color: '#1877F2', url: profileData[key] },
-                  discord: { icon: MovieIcon, color: '#5865F2', url: profileData[key] },
-                  tiktok: { icon: MovieIcon, color: '#000000', url: profileData[key] },
-                  youtube: { icon: YouTubeIcon, color: '#FF0000', url: profileData[key] },
-                  whatsapp: { icon: WhatsAppIcon, color: '#25D366', url: `https://wa.me/${profileData[key].replace(/[^0-9]/g, '')}` },
-                  telegram: { icon: TelegramIcon, color: '#0088CC', url: profileData[key] },
+                  instagram: { icon: InstagramIcon, color: '#E1306C', url: profileData[key], label: 'Instagram' },
+                  github: { icon: GitHubIcon, color: '#333', url: profileData[key], label: 'GitHub' },
+                  linkedin: { icon: LinkedInIcon, color: '#0077B5', url: profileData[key], label: 'LinkedIn' },
+                  email: { icon: EmailIcon, color: '#EA4335', url: `mailto:${profileData[key]}`, label: 'Email' },
+                  mobile: { icon: PhoneIcon, color: '#4CAF50', url: `tel:${profileData[key]}`, label: 'Mobile' },
+                  facebook: { icon: FacebookIcon, color: '#1877F2', url: profileData[key], label: 'Facebook' },
+                  discord: { icon: MovieIcon, color: '#5865F2', url: profileData[key], label: 'Discord' },
+                  tiktok: { icon: MovieIcon, color: '#000000', url: profileData[key], label: 'TikTok' },
+                  youtube: { icon: YouTubeIcon, color: '#FF0000', url: profileData[key], label: 'YouTube' },
+                  whatsapp: { icon: WhatsAppIcon, color: '#25D366', url: `https://wa.me/${profileData[key].replace(/[^0-9]/g, '')}`, label: 'WhatsApp' },
+                  telegram: { icon: TelegramIcon, color: '#0088CC', url: profileData[key], label: 'Telegram' },
                 };
                 return configs[key];
               };
@@ -211,21 +212,22 @@ export default function LinksPage() {
               const IconComponent = config.icon;
 
               return (
-                <IconButton 
-                  key={contactKey}
-                  onClick={() => handleLinkClick(config.url)}
-                  sx={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    '&:hover': { 
-                      backgroundColor: config.color,
-                      transform: 'scale(1.1)'
-                    },
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <IconComponent />
-                </IconButton>
+                <Tooltip key={contactKey} title={config.label} arrow>
+                  <IconButton 
+                    onClick={() => handleLinkClick(config.url)}
+                    sx={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: 'white',
+                      '&:hover': { 
+                        backgroundColor: config.color,
+                        transform: 'scale(1.1)'
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <IconComponent />
+                  </IconButton>
+                </Tooltip>
               );
             })}
           </Box>

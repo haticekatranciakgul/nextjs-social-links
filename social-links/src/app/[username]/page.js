@@ -7,7 +7,8 @@ import {
   Typography, 
   Avatar,
   Container,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -238,21 +239,21 @@ export default function PublicProfilePage() {
               {contactsOrder.map((contactKey) => {
                 if (!profileData[contactKey]) return null;
                 
-                const getContactIcon = (key) => {
-                  const icons = {
-                    instagram: InstagramIcon,
-                    github: GitHubIcon,
-                    linkedin: LinkedInIcon,
-                    email: EmailIcon,
-                    mobile: PhoneIcon,
-                    facebook: FacebookIcon,
-                    discord: MovieIcon,
-                    tiktok: MovieIcon,
-                    youtube: YouTubeIcon,
-                    whatsapp: WhatsAppIcon,
-                    telegram: TelegramIcon,
+                const getContactConfig = (key) => {
+                  const configs = {
+                    instagram: { icon: InstagramIcon, label: 'Instagram' },
+                    github: { icon: GitHubIcon, label: 'GitHub' },
+                    linkedin: { icon: LinkedInIcon, label: 'LinkedIn' },
+                    email: { icon: EmailIcon, label: 'Email' },
+                    mobile: { icon: PhoneIcon, label: 'Mobile' },
+                    facebook: { icon: FacebookIcon, label: 'Facebook' },
+                    discord: { icon: MovieIcon, label: 'Discord' },
+                    tiktok: { icon: MovieIcon, label: 'TikTok' },
+                    youtube: { icon: YouTubeIcon, label: 'YouTube' },
+                    whatsapp: { icon: WhatsAppIcon, label: 'WhatsApp' },
+                    telegram: { icon: TelegramIcon, label: 'Telegram' },
                   };
-                  return icons[key];
+                  return configs[key];
                 };
 
                 const getContactUrl = (key, value) => {
@@ -261,23 +262,26 @@ export default function PublicProfilePage() {
                   return value;
                 };
 
-                const IconComponent = getContactIcon(contactKey);
-                if (!IconComponent) return null;
+                const config = getContactConfig(contactKey);
+                if (!config) return null;
+
+                const IconComponent = config.icon;
 
                 return (
-                  <Button
-                    key={contactKey}
-                    onClick={() => handleLinkClick(getContactUrl(contactKey, profileData[contactKey]))}
-                    sx={{
-                      minWidth: "auto",
-                      p: 1,
-                      borderRadius: "50%",
-                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                      "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
-                    }}
-                  >
-                    <IconComponent sx={{ color: "white" }} />
-                  </Button>
+                  <Tooltip key={contactKey} title={config.label} arrow>
+                    <Button
+                      onClick={() => handleLinkClick(getContactUrl(contactKey, profileData[contactKey]))}
+                      sx={{
+                        minWidth: "auto",
+                        p: 1,
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                        "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                      }}
+                    >
+                      <IconComponent sx={{ color: "white" }} />
+                    </Button>
+                  </Tooltip>
                 );
               })}
             </Box>

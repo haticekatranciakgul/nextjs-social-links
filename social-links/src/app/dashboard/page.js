@@ -87,67 +87,67 @@ export default function Dashboard() {
     instagram: {
       label: "Instagram",
       placeholder: "https://instagram.com/username",
-      icon: <InstagramIcon sx={{ color: '#E1306C' }} />,
+      icon: <InstagramIcon />,
       color: '#E1306C'
     },
     github: {
       label: "GitHub", 
       placeholder: "https://github.com/username",
-      icon: <GitHubIcon sx={{ color: '#333' }} />,
+      icon: <GitHubIcon />,
       color: '#333'
     },
     linkedin: {
       label: "LinkedIn",
       placeholder: "https://linkedin.com/in/username",
-      icon: <LinkedInIcon sx={{ color: '#0077B5' }} />,
+      icon: <LinkedInIcon />,
       color: '#0077B5'
     },
     email: {
       label: "E-mail",
       placeholder: "your.email@example.com",
-      icon: <EmailIcon sx={{ color: '#EA4335' }} />,
+      icon: <EmailIcon />,
       color: '#EA4335'
     },
     mobile: {
       label: "Mobile",
       placeholder: "+1 (555) 123-4567",
-      icon: <PhoneIcon sx={{ color: '#4CAF50' }} />,
+      icon: <PhoneIcon />,
       color: '#4CAF50'
     },
     facebook: {
       label: "Facebook",
       placeholder: "https://facebook.com/username",
-      icon: <FacebookIcon sx={{ color: '#1877F2' }} />,
+      icon: <FacebookIcon />,
       color: '#1877F2'
     },
     discord: {
       label: "Discord",
       placeholder: "username#1234 or discord.gg/invite",
-      icon: <MovieIcon sx={{ color: '#5865F2' }} />,
+      icon: <MovieIcon />,
       color: '#5865F2'
     },
     tiktok: {
       label: "TikTok", 
       placeholder: "https://tiktok.com/@username",
-      icon: <MovieIcon sx={{ color: '#000000' }} />,
+      icon: <MovieIcon />,
       color: '#000000'
     },
     youtube: {
       label: "YouTube",
       placeholder: "https://youtube.com/@channel",
-      icon: <YouTubeIcon sx={{ color: '#FF0000' }} />,
+      icon: <YouTubeIcon />,
       color: '#FF0000'
     },
     whatsapp: {
       label: "WhatsApp",
       placeholder: "+1 (555) 123-4567",
-      icon: <WhatsAppIcon sx={{ color: '#25D366' }} />,
+      icon: <WhatsAppIcon />,
       color: '#25D366'
     },
     telegram: {
       label: "Telegram",
       placeholder: "https://t.me/username", 
-      icon: <TelegramIcon sx={{ color: '#0088CC' }} />,
+      icon: <TelegramIcon />,
       color: '#0088CC'
     }
   };
