@@ -241,17 +241,17 @@ export default function PublicProfilePage() {
                 
                 const getContactConfig = (key) => {
                   const configs = {
-                    instagram: { icon: InstagramIcon, label: 'Instagram' },
-                    github: { icon: GitHubIcon, label: 'GitHub' },
-                    linkedin: { icon: LinkedInIcon, label: 'LinkedIn' },
-                    email: { icon: EmailIcon, label: 'Email' },
-                    mobile: { icon: PhoneIcon, label: 'Mobile' },
-                    facebook: { icon: FacebookIcon, label: 'Facebook' },
-                    discord: { icon: MovieIcon, label: 'Discord' },
-                    tiktok: { icon: MovieIcon, label: 'TikTok' },
-                    youtube: { icon: YouTubeIcon, label: 'YouTube' },
-                    whatsapp: { icon: WhatsAppIcon, label: 'WhatsApp' },
-                    telegram: { icon: TelegramIcon, label: 'Telegram' },
+                    instagram: { icon: InstagramIcon, label: 'Instagram', color: '#E1306C' },
+                    github: { icon: GitHubIcon, label: 'GitHub', color: '#333' },
+                    linkedin: { icon: LinkedInIcon, label: 'LinkedIn', color: '#0077B5' },
+                    email: { icon: EmailIcon, label: 'Email', color: '#EA4335' },
+                    mobile: { icon: PhoneIcon, label: 'Mobile', color: '#4CAF50' },
+                    facebook: { icon: FacebookIcon, label: 'Facebook', color: '#1877F2' },
+                    discord: { icon: MovieIcon, label: 'Discord', color: '#5865F2' },
+                    tiktok: { icon: MovieIcon, label: 'TikTok', color: '#000000' },
+                    youtube: { icon: YouTubeIcon, label: 'YouTube', color: '#FF0000' },
+                    whatsapp: { icon: WhatsAppIcon, label: 'WhatsApp', color: '#25D366' },
+                    telegram: { icon: TelegramIcon, label: 'Telegram', color: '#0088CC' },
                   };
                   return configs[key];
                 };
@@ -276,7 +276,11 @@ export default function PublicProfilePage() {
                         p: 1,
                         borderRadius: "50%",
                         backgroundColor: "rgba(255, 255, 255, 0.2)",
-                        "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.3)" }
+                        "&:hover": { 
+                          backgroundColor: config.color,
+                          transform: "scale(1.1)" 
+                        },
+                        transition: "all 0.2s ease"
                       }}
                     >
                       <IconComponent sx={{ color: "white" }} />
